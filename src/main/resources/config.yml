@@ -1,0 +1,4 @@
+globalvariables:
+# some global variables
+# for example %author% in all commands will be replaced with Phoenix616 if not overridden on execution
+  author: Phoenix616

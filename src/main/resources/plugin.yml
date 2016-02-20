@@ -1,0 +1,25 @@
+name: ${project.name}
+main: de.themoep.timedscripts.TimedScripts
+version: '${minecraft.plugin.version}'
+description: ${project.description}
+authors: [Phoenix616]
+commands:
+   timedscripts:
+      aliases: [scripts]
+      description: Main plugin command for adminstrative purposes
+      usage: /<command> <reload>
+      permission: TimedScripts.command
+      permission-message: You don't have the permission <permission>
+   timedscript:
+      aliases: [script]
+      description: Command to run and edit scripts
+      usage: /<command> <run|view|edit>
+      permission: TimedScripts.command
+      permission-message: You don't have the permission <permission>
+permissions:
+   TimedScripts.admin:
+      description: Gives permission to the admin command
+      default: none
+   TimedScripts.command:
+      description: Gives permission to the /script command
+      default: none
