@@ -44,9 +44,14 @@ public class TimedScripts extends JavaPlugin {
                         reloadConfig();
                         if(args.length < 2 || !"true".equalsIgnoreCase(args[1])) {
                             scriptManager.destroy();
+                            sender.sendMessage(ChatColor.GREEN + "All running scripts stopped!");
                         }
                         scriptManager = new ScriptManager(this);
+                        sender.sendMessage(ChatColor.GREEN + "Scripts reloaded!");
+                    } else {
+                        sender.sendMessage("You don't have the permission TimedScripts.admin");
                     }
+                    return true;
                 }
             }
             return false;
