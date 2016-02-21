@@ -5,6 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 /**
  * TimedScripts
  * Copyright (C) 2015 Max Lee (https://github.com/Phoenix616/)
@@ -27,7 +29,7 @@ public class TimedScripts extends JavaPlugin {
 
     public void onEnable() {
         saveDefaultConfig();
-        this.scriptManager = new ScriptManager(this);
+        scriptManager = new ScriptManager(this);
     }
 
     public ScriptManager getScriptManager() {
@@ -36,6 +38,17 @@ public class TimedScripts extends JavaPlugin {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if("timedscripts".equalsIgnoreCase(cmd.getName())) {
+            if(args.length > 0) {
+                if("reload".equalsIgnoreCase(args[0])) {
+                    if(sender.hasPermission("TimedScripts.admin")) {
+                        reloadConfig();
+                        if(args.length < 2 || !"true".equalsIgnoreCase(args[1])) {
+                            scriptManager.destroy();
+                        }
+                        scriptManager = new ScriptManager(this);
+                    }
+                }
+            }
             return false;
         } else if ("timedscript".equalsIgnoreCase(cmd.getName())){
             if(args.length > 0) {
@@ -48,6 +61,25 @@ public class TimedScripts extends JavaPlugin {
                         }
                     } else {
                         sender.sendMessage("Usage: /" + label + " run <scriptname> [<var=value> ...]");
+                    }
+                } else if("info".equalsIgnoreCase(args[0])) {
+                    if(args.length > 1) {
+                        TimedScript script = getScriptManager().getScript(args[1]);
+                        if(script != null) {
+                            int commandCount = 0;
+                            for(List<TimedCommand> commands : script.getCommands().values()) {
+                                commandCount += commands.size();
+                            }
+                            sender.sendMessage(new String[]{
+                                    ChatColor.GREEN + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + ":",
+                                    ChatColor.GREEN + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.GREEN + "(" + script.getCreatorId() + ")",
+                                    ChatColor.GREEN + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.GREEN + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.GREEN + " different times!"
+                            });
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Could not find a script by the name of " + ChatColor.YELLOW + args[1]);
+                        }
+                    } else {
+                        sender.sendMessage("Usage: /" + label + " info <scriptname>");
                     }
                 }
             }

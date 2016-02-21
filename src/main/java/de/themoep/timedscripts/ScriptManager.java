@@ -10,8 +10,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +38,8 @@ public class ScriptManager {
     private final TimedScripts plugin;
     private Map<String, TimedScript> scriptMap = new HashMap<String, TimedScript>();
     private Map<String, String> globals = new HashMap<String, String>();
+
+    private Set<TimerTask> timerTasks = new HashSet<TimerTask>();
 
     public ScriptManager(TimedScripts plugin) {
         this.plugin = plugin;
@@ -110,6 +115,7 @@ public class ScriptManager {
             return false;
         }
 
+        Timer timer = new Timer();
         Map<Double, List<TimedCommand>> commands = script.getCommands();
         for(Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
             final List<String> commandList = new ArrayList<String>();
@@ -117,8 +123,7 @@ public class ScriptManager {
                 commandList.add(command.getCommand(replacements));
             }
 
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
                     new BukkitRunnable() {
@@ -128,11 +133,24 @@ public class ScriptManager {
                             }
                         }
                     }.runTask(plugin);
+                    timerTasks.remove(this);
                 }
-            }, (long) (entry.getKey() * 1000));
+            };
+            timerTasks.add(task);
+            timer.schedule(task, (long) (entry.getKey() * 1000));
         }
-
-
         return true;
+    }
+
+    /**
+     * Cancels all timers running
+     */
+    public void destroy() {
+        Iterator<TimerTask> taskIterator = timerTasks.iterator();
+        while(taskIterator.hasNext()) {
+            TimerTask task = taskIterator.next();
+            task.cancel();
+            taskIterator.remove();
+        }
     }
 }

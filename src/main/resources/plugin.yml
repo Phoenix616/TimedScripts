@@ -7,7 +7,7 @@ commands:
    timedscripts:
       aliases: [scripts]
       description: Main plugin command for adminstrative purposes
-      usage: /<command> <reload>
+      usage: /<command> <reload> [true|false]
       permission: TimedScripts.command
       permission-message: You don't have the permission <permission>
    timedscript:
