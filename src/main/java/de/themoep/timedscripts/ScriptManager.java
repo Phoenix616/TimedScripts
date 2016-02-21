@@ -125,7 +125,7 @@ public class ScriptManager {
             Entity entity = (Entity) sender;
             senderWorld = entity.getWorld().getName();
             senderLoc = entity.getLocation();
-            if(!entity.getCustomName().isEmpty()) {
+            if(entity.getCustomName() != null) {
                 senderName = entity.getCustomName();
             }
         } else if(sender instanceof BlockCommandSender) {
