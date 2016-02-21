@@ -1,7 +1,10 @@
 package de.themoep.timedscripts;
 
+import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -106,7 +109,7 @@ public class ScriptManager {
     }
 
     public boolean runScript(CommandSender sender, String name) {
-        return runScript(sender, name, null);
+        return runScript(sender, name, new HashMap<String, String>());
     }
 
     public boolean runScript(final CommandSender sender, String name, Map<String, String> replacements) {
@@ -114,6 +117,26 @@ public class ScriptManager {
         if(script == null) {
             return false;
         }
+
+        String senderName = sender.getName();
+        String senderWorld = plugin.getServer().getWorlds().get(0).getName();
+        Location senderLoc = plugin.getServer().getWorlds().get(0).getSpawnLocation();
+        if(sender instanceof Entity) {
+            Entity entity = (Entity) sender;
+            senderWorld = entity.getWorld().getName();
+            senderLoc = entity.getLocation();
+            if(!entity.getCustomName().isEmpty()) {
+                senderName = entity.getCustomName();
+            }
+        } else if(sender instanceof BlockCommandSender) {
+            BlockCommandSender blockSender = (BlockCommandSender) sender;
+            senderWorld = blockSender.getBlock().getWorld().getName();
+            senderLoc = blockSender.getBlock().getLocation();
+        }
+
+        replacements.put("sender", senderName);
+        replacements.put("senderworld", senderWorld);
+        replacements.put("senderlocation", senderLoc.getBlockX() + " " + senderLoc.getBlockY() + " " + senderLoc.getBlockZ());
 
         Timer timer = new Timer();
         Map<Double, List<TimedCommand>> commands = script.getCommands();
