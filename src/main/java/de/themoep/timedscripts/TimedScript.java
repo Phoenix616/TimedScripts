@@ -73,7 +73,7 @@ public class TimedScript {
                 }
             } else if(line.startsWith("-")){
                 addCommand(currentTime, line.substring(1), false);
-            } else {
+            } else if(line.contains(":")){
                 String timeStr = line.substring(0, line.indexOf(':'));
                 try {
                     currentTime = Double.parseDouble(timeStr);
