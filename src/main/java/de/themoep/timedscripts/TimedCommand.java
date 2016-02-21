@@ -28,10 +28,10 @@ public class TimedCommand {
     private Set<String> variables = new HashSet<String>();
 
     public TimedCommand(String command) {
+        command = command.trim();
         if(command.startsWith("/")) {
             command = command.substring(1);
         }
-        command = command.trim();
         Pattern pattern = Pattern.compile("\\%(\\w+?)\\%");
         Matcher matcher = pattern.matcher(command);
         while (matcher.find()) {
