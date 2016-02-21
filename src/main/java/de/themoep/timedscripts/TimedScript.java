@@ -254,18 +254,22 @@ public class TimedScript {
 
             for(String headLine : getFileHead()) {
                 writer.write(headLine);
+                writer.newLine();
             }
 
             for(Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
                 if(entry.getValue() == null || entry.getValue().size() == 0) {
                     continue;
                 }
+                writer.write(formatTime(entry.getKey()) + ":");
                 if(entry.getValue().size() == 1) {
-                    writer.write(formatTime(entry.getKey()) + ": " + entry.getValue().get(0));
+                    writer.write(" " + entry.getValue().get(0));
+                    writer.newLine();
                 } else {
-                    writer.write(formatTime(entry.getKey()) + ":");
+                    writer.newLine();
                     for(TimedCommand command : entry.getValue()) {
                         writer.write("- " + command);
+                        writer.newLine();
                     }
                 }
             }
