@@ -19,7 +19,7 @@ commands:
 permissions:
    TimedScripts.admin:
       description: Gives permission to the admin command
-      default: none
+      default: false
    TimedScripts.command:
       description: Gives permission to the /script command
-      default: none
+      default: false
