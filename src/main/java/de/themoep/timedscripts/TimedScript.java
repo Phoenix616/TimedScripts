@@ -72,13 +72,13 @@ public class TimedScript {
                     }
                 }
             } else if(line.startsWith("-")){
-                addCommand(currentTime, line.substring(1));
+                addCommand(currentTime, line.substring(1), false);
             } else {
                 String timeStr = line.substring(0, line.indexOf(':'));
                 try {
                     currentTime = Double.parseDouble(timeStr);
                     if(line.length() > timeStr.length() + 1) {
-                        addCommand(currentTime, line.substring(timeStr.length() + 1));
+                        addCommand(currentTime, line.substring(timeStr.length() + 1), false);
                     }
                 } catch(NumberFormatException e) {
                     plugin.getLogger().severe("Expected double on line " + lineNumber + ", found " + timeStr + "!");
@@ -106,7 +106,17 @@ public class TimedScript {
      * @param command The string of the command to add
      */
     public void addCommand(double time, String command) {
-        addCommand(time, new TimedCommand(command));
+        addCommand(time, command, true);
+    }
+
+    /**
+     * Add a command at a specific time
+     * @param time The time (in seconds)
+     * @param command The string of the command to add
+     * @param writeFile Whether or not the scripts should be written to file
+     */
+    public void addCommand(double time, String command, boolean writeFile) {
+        addCommand(time, new TimedCommand(command), writeFile);
     }
 
     /**
@@ -115,11 +125,23 @@ public class TimedScript {
      * @param command The TimedCommand to add
      */
     public void addCommand(double time, TimedCommand command) {
+        addCommand(time, command, true);
+    }
+
+    /**
+     * Add a command at a specific time
+     * @param time The time (in seconds)
+     * @param command The TimedCommand to add
+     * @param writeFile Whether or not the scripts should be written to file
+     */
+    public void addCommand(double time, TimedCommand command, boolean writeFile) {
         if(!commands.containsKey(time) || commands.get(time) == null) {
             commands.put(time, new ArrayList<TimedCommand>());
         }
         commands.get(time).add(command);
-        save();
+        if(writeFile) {
+            save();
+        }
     }
 
     /**
