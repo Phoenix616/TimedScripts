@@ -54,7 +54,6 @@ public class TimedScripts extends JavaPlugin {
                     return true;
                 }
             }
-            return false;
         } else if ("timedscript".equalsIgnoreCase(cmd.getName())){
             if(args.length > 0) {
                 if("run".equalsIgnoreCase(args[0])) {
@@ -67,6 +66,7 @@ public class TimedScripts extends JavaPlugin {
                     } else {
                         sender.sendMessage("Usage: /" + label + " run <scriptname> [<var=value> ...]");
                     }
+                    return true;
                 } else if("info".equalsIgnoreCase(args[0])) {
                     if(args.length > 1) {
                         TimedScript script = getScriptManager().getScript(args[1]);
@@ -86,9 +86,9 @@ public class TimedScripts extends JavaPlugin {
                     } else {
                         sender.sendMessage("Usage: /" + label + " info <scriptname>");
                     }
+                    return true;
                 }
             }
-            return false;
         }
         return false;
     }
