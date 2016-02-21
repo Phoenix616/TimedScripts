@@ -246,7 +246,7 @@ public class TimedScript {
         return String.format("%s", time);
     }
 
-    private void save() {
+    public void save() {
         BufferedWriter writer = null;
         try {
             file.createNewFile();

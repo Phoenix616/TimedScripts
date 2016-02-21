@@ -67,6 +67,19 @@ public class TimedScripts extends JavaPlugin {
                         sender.sendMessage("Usage: /" + label + " run <scriptname> [<var=value> ...]");
                     }
                     return true;
+                } else if("save".equalsIgnoreCase(args[0])) {
+                    if(args.length > 1) {
+                        TimedScript script = getScriptManager().getScript(args[1]);
+                        if(script != null) {
+                            script.save();
+                            sender.sendMessage(ChatColor.GREEN + "Script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " saved!");
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "Could not find a script by the name of " + ChatColor.YELLOW + args[1]);
+                        }
+                    } else {
+                        sender.sendMessage("Usage: /" + label + " save <scriptname>");
+                    }
+                    return true;
                 } else if("info".equalsIgnoreCase(args[0])) {
                     if(args.length > 1) {
                         TimedScript script = getScriptManager().getScript(args[1]);
