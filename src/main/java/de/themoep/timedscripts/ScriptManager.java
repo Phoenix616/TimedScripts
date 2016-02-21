@@ -136,6 +136,11 @@ public class ScriptManager {
 
         replacements.put("sender", senderName);
         replacements.put("senderworld", senderWorld);
+        replacements.put("senderx", String.valueOf(senderLoc.getBlockX()));
+        replacements.put("sendery", String.valueOf(senderLoc.getBlockY()));
+        replacements.put("senderz", String.valueOf(senderLoc.getBlockZ()));
+        replacements.put("senderyaw", String.valueOf(senderLoc.getYaw()));
+        replacements.put("senderpitch", String.valueOf(senderLoc.getPitch()));
         replacements.put("senderlocation", senderLoc.getBlockX() + " " + senderLoc.getBlockY() + " " + senderLoc.getBlockZ());
 
         Timer timer = new Timer();
