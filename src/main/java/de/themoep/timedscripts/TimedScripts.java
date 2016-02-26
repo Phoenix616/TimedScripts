@@ -30,6 +30,7 @@ public class TimedScripts extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         scriptManager = new ScriptManager(this);
+        getCommand("timedscript").setExecutor(new TimedScriptCommand(this));
     }
 
     public ScriptManager getScriptManager() {
@@ -50,54 +51,6 @@ public class TimedScripts extends JavaPlugin {
                         sender.sendMessage(ChatColor.GREEN + "Scripts reloaded!");
                     } else {
                         sender.sendMessage("You don't have the permission TimedScripts.admin");
-                    }
-                    return true;
-                }
-            }
-        } else if ("timedscript".equalsIgnoreCase(cmd.getName())){
-            if(args.length > 0) {
-                if("run".equalsIgnoreCase(args[0])) {
-                    if(args.length > 1) {
-                        if(getScriptManager().runScript(sender, args[1])) {
-                            sender.sendMessage(ChatColor.GREEN + "Started script " + ChatColor.YELLOW + args[1]);
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "Could not find a script by the name of " + ChatColor.YELLOW + args[1]);
-                        }
-                    } else {
-                        sender.sendMessage("Usage: /" + label + " run <scriptname> [<var=value> ...]");
-                    }
-                    return true;
-                } else if("save".equalsIgnoreCase(args[0])) {
-                    if(args.length > 1) {
-                        TimedScript script = getScriptManager().getScript(args[1]);
-                        if(script != null) {
-                            script.save();
-                            sender.sendMessage(ChatColor.GREEN + "Script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " saved!");
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "Could not find a script by the name of " + ChatColor.YELLOW + args[1]);
-                        }
-                    } else {
-                        sender.sendMessage("Usage: /" + label + " save <scriptname>");
-                    }
-                    return true;
-                } else if("info".equalsIgnoreCase(args[0])) {
-                    if(args.length > 1) {
-                        TimedScript script = getScriptManager().getScript(args[1]);
-                        if(script != null) {
-                            int commandCount = 0;
-                            for(List<TimedCommand> commands : script.getCommands().values()) {
-                                commandCount += commands.size();
-                            }
-                            sender.sendMessage(new String[]{
-                                    ChatColor.GREEN + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + ":",
-                                    ChatColor.GREEN + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.GREEN + "(" + script.getCreatorId() + ")",
-                                    ChatColor.GREEN + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.GREEN + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.GREEN + " different times!"
-                            });
-                        } else {
-                            sender.sendMessage(ChatColor.RED + "Could not find a script by the name of " + ChatColor.YELLOW + args[1]);
-                        }
-                    } else {
-                        sender.sendMessage("Usage: /" + label + " info <scriptname>");
                     }
                     return true;
                 }

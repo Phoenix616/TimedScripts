@@ -1,10 +1,12 @@
 package de.themoep.timedscripts;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -43,6 +45,7 @@ public class ScriptManager {
     private Map<String, String> globals = new HashMap<String, String>();
 
     private Set<TimerTask> timerTasks = new HashSet<TimerTask>();
+    private File scriptFolder;
 
     public ScriptManager(TimedScripts plugin) {
         this.plugin = plugin;
@@ -54,7 +57,7 @@ public class ScriptManager {
         }
 
         plugin.getLogger().info("Loading scripts from folder...");
-        File scriptFolder = new File(plugin.getDataFolder(), "scripts");
+        scriptFolder = new File(plugin.getDataFolder(), "scripts");
         if(!scriptFolder.exists()) {
             if(scriptFolder.mkdir()) {
                 plugin.getLogger().info("Scripts folder did not exist. Created it!");
@@ -81,6 +84,9 @@ public class ScriptManager {
         for(File file : scriptFiles) {
             try {
                 TimedScript script = new TimedScript(plugin, file);
+                try {
+                    plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + script.getName().toLowerCase()));
+                } catch(IllegalArgumentException ignored) { }
                 addScript(script);
             } catch(FileNotFoundException e) {
                 plugin.getLogger().severe("Script " + file.getName() + " not found in scripts folder? Where did it go?");
@@ -112,12 +118,20 @@ public class ScriptManager {
         return runScript(sender, name, new HashMap<String, String>());
     }
 
-    public boolean runScript(final CommandSender sender, String name, Map<String, String> replacements) {
+    public void runScript(CommandSender sender, TimedScript script) {
+        runScript(sender, script, new HashMap<String, String>());
+    }
+
+    public boolean runScript(CommandSender sender, String name, Map<String, String> replacements) {
         TimedScript script = getScript(name);
         if(script == null) {
             return false;
         }
+        runScript(sender, script, replacements);
+        return true;
+    }
 
+    public void runScript(final CommandSender sender, TimedScript script, Map<String, String> replacements) {
         String senderName = sender.getName();
         String senderWorld = plugin.getServer().getWorlds().get(0).getName();
         Location senderLoc = plugin.getServer().getWorlds().get(0).getSpawnLocation();
@@ -174,7 +188,6 @@ public class ScriptManager {
                 timer.schedule(task, (long) (entry.getKey() * 1000));
             }
         }
-        return true;
     }
 
     /**
@@ -186,6 +199,39 @@ public class ScriptManager {
             TimerTask task = taskIterator.next();
             task.cancel();
             taskIterator.remove();
+        }
+    }
+
+    /**
+     * Get the folder the scripts are stored int
+     * @return The script folder file
+     */
+    public File getFolder() {
+        return scriptFolder;
+    }
+
+    /**
+     * Helper method to create, add and save a new script. The creator gets send messages about the outcome of the method.
+     * @param name The name of the script
+     * @param creator The creator of the script
+     * @return <tt>true</tt> if a new script was created; <tt>false</tt> if an error occurred
+     */
+    public boolean newScript(String name, CommandSender creator) {
+        if(getScript(name) != null) {
+            creator.sendMessage(ChatColor.RED + "There already exists a script with the name " + ChatColor.YELLOW + name);
+            return false;
+        }
+        TimedScript newScript = new TimedScript(getFolder(), name, creator);
+        if(newScript.save()) {
+            addScript(newScript);
+            try {
+                plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + newScript.getName().toLowerCase()));
+            } catch(IllegalArgumentException ignored) { }
+            creator.sendMessage(ChatColor.GREEN + "Created new script " + ChatColor.YELLOW + newScript.getName());
+            return true;
+        } else {
+            creator.sendMessage(ChatColor.RED + "An error occurred while saving the script " + newScript.getName() + "! Please take a look at the exception in the log.");
+            return false;
         }
     }
 }

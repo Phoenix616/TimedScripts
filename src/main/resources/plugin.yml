@@ -13,7 +13,7 @@ commands:
    timedscript:
       aliases: [script]
       description: Command to run and edit scripts
-      usage: /<command> <run|view|edit>
+      usage: /<command> <help|create|edit|run|info|view|save|delete>
       permission: TimedScripts.command
       permission-message: You don't have the permission <permission>
 permissions:
@@ -22,4 +22,28 @@ permissions:
       default: false
    TimedScripts.command:
       description: Gives permission to the /script command
-      default: op
+      default: false
+   TimedScripts.command.edit:
+      description: Gives permission to edit scripts
+      default: false
+   TimedScripts.command.edit.others:
+      description: Gives permission to edit scripts by other people
+      default: false
+   TimedScripts.command.run:
+      description: Gives permission to run scripts
+      default: false
+   TimedScripts.command.create:
+      description: Gives permission to create new scripts
+      default: false
+   TimedScripts.command.save:
+      description: Gives permission to save a script
+      default: false
+   TimedScripts.command.info:
+      description: Gives permission to get info about scripts
+      default: false
+   TimedScripts.command.view:
+      description: Gives permission to view the commands of scripts
+      default: false
+   TimedScripts.command.delete:
+      description: Gives permission to delete scripts
+      default: false

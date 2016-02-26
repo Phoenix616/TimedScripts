@@ -105,8 +105,8 @@ public class TimedScript {
      * @param time The time (in seconds)
      * @param command The string of the command to add
      */
-    public void addCommand(double time, String command) {
-        addCommand(time, command, true);
+    public boolean addCommand(double time, String command) {
+        return addCommand(time, command, true);
     }
 
     /**
@@ -115,8 +115,8 @@ public class TimedScript {
      * @param command The string of the command to add
      * @param writeFile Whether or not the scripts should be written to file
      */
-    public void addCommand(double time, String command, boolean writeFile) {
-        addCommand(time, new TimedCommand(command), writeFile);
+    public boolean addCommand(double time, String command, boolean writeFile) {
+        return addCommand(time, new TimedCommand(command), writeFile);
     }
 
     /**
@@ -124,8 +124,8 @@ public class TimedScript {
      * @param time The time (in seconds)
      * @param command The TimedCommand to add
      */
-    public void addCommand(double time, TimedCommand command) {
-        addCommand(time, command, true);
+    public boolean addCommand(double time, TimedCommand command) {
+        return addCommand(time, command, true);
     }
 
     /**
@@ -134,14 +134,28 @@ public class TimedScript {
      * @param command The TimedCommand to add
      * @param writeFile Whether or not the scripts should be written to file
      */
-    public void addCommand(double time, TimedCommand command, boolean writeFile) {
+    public boolean addCommand(double time, TimedCommand command, boolean writeFile) {
         if(!commands.containsKey(time) || commands.get(time) == null) {
             commands.put(time, new ArrayList<TimedCommand>());
         }
         commands.get(time).add(command);
         if(writeFile) {
-            save();
+            return save();
         }
+        return true;
+    }
+
+    public TimedCommand setCommand(double time, int index, String command) {
+        return setCommand(time, index, new TimedCommand(command));
+    }
+
+    public TimedCommand setCommand(double time, int index, TimedCommand command) {
+        if(getCommands(time) == null || getCommands(time).size() <= index) {
+            return null;
+        }
+        TimedCommand r = getCommands(time).set(index, command);
+        save();
+        return r;
     }
 
     /**
@@ -246,7 +260,7 @@ public class TimedScript {
         return String.format("%s", time);
     }
 
-    public void save() {
+    public boolean save() {
         BufferedWriter writer = null;
         try {
             file.createNewFile();
@@ -276,10 +290,12 @@ public class TimedScript {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         } finally {
             try {
                 writer.close();
             } catch (Exception ignored) {}
         }
+        return true;
     }
 }
