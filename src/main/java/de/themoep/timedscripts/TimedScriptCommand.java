@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.Map;
  * You should have received a copy of the Mozilla Public License v2.0
  * along with this program. If not, see <http://mozilla.org/MPL/2.0/>.
  */
-public class TimedScriptCommand implements CommandExecutor {
+public class TimedScriptCommand implements CommandExecutor, TabCompleter {
     private final TimedScripts plugin;
 
     public TimedScriptCommand(TimedScripts plugin) {
@@ -290,5 +291,78 @@ public class TimedScriptCommand implements CommandExecutor {
         public String getUsage() {
             return "/timedscript edit <scriptname> " + usage;
         }
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if(!"timedscript".equalsIgnoreCase(cmd.getName())) {
+            return null;
+        }
+        List<String> tabList = new ArrayList<String>();
+        if(args.length == 0) {
+            for(Action action : Action.values()) {
+                tabList.add(action.toString().toLowerCase());
+            }
+        } else if(args.length == 1){
+            try {
+                Action.valueOf(args[0].toUpperCase());
+                for(TimedScript script : plugin.getScriptManager().getScripts()) {
+                    tabList.add(script.getName());
+                }
+            } catch(IllegalArgumentException e) {
+                for(Action action : Action.values()) {
+                    String actionName = action.toString().toLowerCase();
+                    if(actionName.startsWith(args[0].toLowerCase())) {
+                        tabList.add(actionName);
+                    }
+                }
+            }
+        } else if(args.length == 2) {
+            if(plugin.getScriptManager().getScript(args[1]) != null) {
+                TimedScript script = plugin.getScriptManager().getScript(args[1]);
+                try {
+                    Action action = Action.valueOf(args[0].toUpperCase());
+                    if(action == Action.EDIT) {
+                        for(EditAction editAction : EditAction.values()) {
+                            tabList.add(editAction.toString().toLowerCase());
+                        }
+                    } else if(action == Action.VIEW) {
+                        for(Double time : script.getCommands().keySet()) {
+                            tabList.add(Utils.formatTime(time));
+                        }
+                    }
+
+                } catch(IllegalArgumentException ignored) {}
+            } else {
+                for(TimedScript script : plugin.getScriptManager().getScripts()) {
+                    if(script.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                        tabList.add(script.getName());
+                    }
+                }
+            }
+        } else if(args.length == 3) {
+            if(plugin.getScriptManager().getScript(args[1]) != null) {
+                TimedScript script = plugin.getScriptManager().getScript(args[1]);
+                try {
+                    Action action = Action.valueOf(args[0].toUpperCase());
+                    if(action == Action.EDIT) {
+                        for(EditAction editAction : EditAction.values()) {
+                            String editActionName = editAction.toString().toLowerCase();
+                            if(editActionName.startsWith(args[2].toLowerCase())) {
+                                tabList.add(editActionName);
+                            }
+                        }
+                    } else if(action == Action.VIEW) {
+                        for(Double time : script.getCommands().keySet()) {
+                            String timeFormat = Utils.formatTime(time);
+                            if(timeFormat.startsWith(args[2].toLowerCase())) {
+                                tabList.add(timeFormat);
+                            }
+                        }
+                    }
+
+                } catch(IllegalArgumentException ignored) {}
+            }
+        }
+        return tabList;
     }
 }

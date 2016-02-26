@@ -5,6 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,7 +48,7 @@ public class TimedScripts extends JavaPlugin {
                         reloadConfig();
                         if(args.length < 2 || !"true".equalsIgnoreCase(args[1])) {
                             scriptManager.destroy();
-                            sender.sendMessage(ChatColor.GREEN + "All running scripts stopped!");
+                            sender.sendMessage(ChatColor.YELLOW + "All running scripts stopped!");
                         }
                         scriptManager = new ScriptManager(this);
                         sender.sendMessage(ChatColor.GREEN + "Scripts reloaded!");
@@ -54,9 +57,25 @@ public class TimedScripts extends JavaPlugin {
                     }
                     return true;
                 }
+            } else {
+                sender.sendMessage(ChatColor.AQUA + "List of TimedScripts:");
+                if(getScriptManager().getScripts().size() > 0) {
+                    for(TimedScript script : getScriptManager().getScripts()) {
+                        sender.sendMessage(" " + script.getName() + " by " + script.getCreatorName());
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "None");
+                }
             }
         }
         return false;
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if(!"timedscripts".equalsIgnoreCase(cmd.getName())) {
+            return null;
+        }
+        return args.length == 0 || "reload".startsWith(args[0].toLowerCase()) ? Collections.singletonList("reload") : new ArrayList<String>();
     }
 
 }

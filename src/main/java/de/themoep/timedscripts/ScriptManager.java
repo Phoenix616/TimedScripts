@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -233,5 +234,9 @@ public class ScriptManager {
             creator.sendMessage(ChatColor.RED + "An error occurred while saving the script " + newScript.getName() + "! Please take a look at the exception in the log.");
             return false;
         }
+    }
+
+    public Collection<TimedScript> getScripts() {
+        return scriptMap.values();
     }
 }
