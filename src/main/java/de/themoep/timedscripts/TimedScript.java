@@ -253,13 +253,6 @@ public class TimedScript {
         return head;
     }
 
-    private static String formatTime(double time) {
-        if(time == (long) time) {
-            return String.format("%d", (long) time);
-        }
-        return String.format("%s", time);
-    }
-
     public boolean save() {
         BufferedWriter writer = null;
         try {
@@ -275,7 +268,7 @@ public class TimedScript {
                 if(entry.getValue() == null || entry.getValue().size() == 0) {
                     continue;
                 }
-                writer.write(formatTime(entry.getKey()) + ":");
+                writer.write(Utils.formatTime(entry.getKey()) + ":");
                 if(entry.getValue().size() == 1) {
                     writer.write(" " + entry.getValue().get(0));
                     writer.newLine();

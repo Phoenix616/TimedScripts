@@ -147,7 +147,7 @@ public class TimedScriptCommand implements CommandExecutor {
                     }
                     for(int i = 0; i < commands.size(); i++) {
                         TimedCommand command = commands.get(i);
-                        commandList.add(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + time + ": " + ChatColor.GRAY + command);
+                        commandList.add(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
                     }
                 } catch(NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + args[0] + " is not a valid double number input!");
@@ -157,11 +157,11 @@ public class TimedScriptCommand implements CommandExecutor {
                 for(Map.Entry<Double, List<TimedCommand>> entry : script.getCommands().entrySet()) {
                     for(int i = 0; i < entry.getValue().size(); i++) {
                         TimedCommand command = entry.getValue().get(i);
-                        commandList.add(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + time + ": " + ChatColor.GRAY + command);
+                        commandList.add(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(entry.getKey()) + ": " + ChatColor.GRAY + command);
                     }
                 }
             }
-            sender.sendMessage(ChatColor.GREEN + "Commands of " + ChatColor.YELLOW + script.getName() + (time == -1 ? ":" : " at " + time + ":"));
+            sender.sendMessage(ChatColor.GREEN + "Commands of " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + (time == -1 ? ":" : " at " + Utils.formatTime(time) + ":"));
             sender.sendMessage(commandList.toArray(new String[commandList.size()]));
 
         } else if(action == Action.SAVE) {
@@ -193,7 +193,7 @@ public class TimedScriptCommand implements CommandExecutor {
         }
 
         Action(String usage) {
-            this.usage = toString().toLowerCase() + " " + usage;
+            this.usage = toString().toLowerCase() + " <scriptname> " + usage;
         }
 
         public String getUsage() {
@@ -222,7 +222,7 @@ public class TimedScriptCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Error while trying to add command to script " + ChatColor.YELLOW + script.getName() + ChatColor.RED + "! Take a look at the log for the exact error!");
                 script.getCommands(time).remove(script.getCommands(time).size() - 1);
             }
-            sender.sendMessage(ChatColor.DARK_GRAY + Double.toString(time) + ": " + ChatColor.GRAY + command);
+            sender.sendMessage(ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
 
         } else if(action == EditAction.SET) {
             if(args.length < 2) {
@@ -237,8 +237,8 @@ public class TimedScriptCommand implements CommandExecutor {
                 TimedCommand command = script.setCommand(time, i, commandString.toString());
                 if(command != null) {
                     sender.sendMessage(ChatColor.GREEN + "Set the command for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " at position " + i + " :");
-                    sender.sendMessage(ChatColor.YELLOW + "Old #" + i + " " + ChatColor.DARK_GRAY + Double.toString(time) + ": " + ChatColor.GRAY + command);
-                    sender.sendMessage(ChatColor.YELLOW + "New #" + i + " " + ChatColor.DARK_GRAY + Double.toString(time) + ": " + ChatColor.GRAY + commandString);
+                    sender.sendMessage(ChatColor.YELLOW + "Old #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
+                    sender.sendMessage(ChatColor.YELLOW + "New #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + commandString);
                 } else {
                     sender.sendMessage(ChatColor.RED + "Error while setting the command. Are you sure there was one at position " + ChatColor.YELLOW + i + ChatColor.RED + "? Maybe try using " + EditAction.ADD.getUsage() + " instead.");
                 }
@@ -257,7 +257,7 @@ public class TimedScriptCommand implements CommandExecutor {
                 TimedCommand command = script.removeCommand(time, i);
                 if(command != null) {
                     sender.sendMessage(ChatColor.GREEN + "Removed the following command from script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + ":");
-                    sender.sendMessage(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + Double.toString(time) + ": " + ChatColor.GRAY + command);
+                    sender.sendMessage(ChatColor.YELLOW + "#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
                 } else {
                     sender.sendMessage(ChatColor.RED + "The script " + ChatColor.YELLOW + script.getName() + ChatColor.RED + " does not have a command at the " + ChatColor.YELLOW + i + "." + ChatColor.RED + " position at " + ChatColor.YELLOW + time + ChatColor.RED + " seconds!");
                 }
