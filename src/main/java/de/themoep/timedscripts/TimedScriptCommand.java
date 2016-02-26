@@ -37,7 +37,7 @@ public class TimedScriptCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if(args.length == 0 || "help".equalsIgnoreCase(args[0])) {
-            sender.sendMessage(ChatColor.YELLOW + "TimedScripts command usage:");
+            sender.sendMessage(ChatColor.AQUA + "TimedScripts command usage:");
             sender.sendMessage("/timedscripts - Lists all scripts");
             for(Action action : Action.values()) {
                 sender.sendMessage(action.getUsage(label));
@@ -125,9 +125,9 @@ public class TimedScriptCommand implements CommandExecutor {
                 commandCount += commands.size();
             }
             sender.sendMessage(new String[]{
-                    ChatColor.GREEN + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + ":",
-                    ChatColor.GREEN + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.GREEN + "(" + script.getCreatorId() + ")",
-                    ChatColor.GREEN + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.GREEN + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.GREEN + " different times!"
+                    ChatColor.AQUA + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.AQUA + ":",
+                    ChatColor.AQUA + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.AQUA + "(" + script.getCreatorId() + ")",
+                    ChatColor.AQUA + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.AQUA + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.AQUA + " different times!"
             });
 
         } else if(action == Action.VIEW) {
@@ -161,7 +161,7 @@ public class TimedScriptCommand implements CommandExecutor {
                     }
                 }
             }
-            sender.sendMessage(ChatColor.GREEN + "Commands of " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + (time == -1 ? ":" : " at " + Utils.formatTime(time) + ":"));
+            sender.sendMessage(ChatColor.AQUA + "Commands of " + ChatColor.YELLOW + script.getName() + ChatColor.AQUA + (time == -1 ? ":" : " at " + Utils.formatTime(time) + ":"));
             sender.sendMessage(commandList.toArray(new String[commandList.size()]));
 
         } else if(action == Action.SAVE) {
