@@ -66,6 +66,7 @@ public class TimedScripts extends JavaPlugin {
                 } else {
                     sender.sendMessage(ChatColor.RED + "None");
                 }
+                return true;
             }
         }
         return false;

@@ -89,7 +89,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 return false;
             }
             try {
-                EditAction editAction = EditAction.valueOf(args[0]);
+                EditAction editAction = EditAction.valueOf(args[0].toUpperCase());
                 try {
                     if(args.length == 1) {
                         sender.sendMessage(ChatColor.RED + "Usage: " + editAction.getUsage());
@@ -108,7 +108,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(ChatColor.RED + "Usage: " + editAction.getUsage());
                 }
             } catch(IllegalArgumentException e) {
-                sender.sendMessage(ChatColor.RED + "The action " + args[0].toUpperCase() + " is unknown!");
+                sender.sendMessage(ChatColor.RED + "The edit action " + args[0].toUpperCase() + " is unknown!");
                 return false;
             }
 
