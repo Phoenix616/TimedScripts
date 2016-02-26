@@ -1,8 +1,6 @@
 package de.themoep.timedscripts;
 
-import com.sun.deploy.util.ArrayUtil;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
