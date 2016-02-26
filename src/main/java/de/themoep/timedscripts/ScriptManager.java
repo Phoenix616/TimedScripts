@@ -151,21 +151,28 @@ public class ScriptManager {
                 commandList.add(command.getCommand(replacements));
             }
 
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    new BukkitRunnable() {
-                        public void run() {
-                            for(String command : commandList) {
-                                plugin.getServer().dispatchCommand(sender, command);
-                            }
-                        }
-                    }.runTask(plugin);
-                    timerTasks.remove(this);
+            if(entry.getKey() == 0) {
+                for(String command : commandList) {
+                    plugin.getServer().dispatchCommand(sender, command);
                 }
-            };
-            timerTasks.add(task);
-            timer.schedule(task, (long) (entry.getKey() * 1000));
+            } else {
+
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        new BukkitRunnable() {
+                            public void run() {
+                                for(String command : commandList) {
+                                    plugin.getServer().dispatchCommand(sender, command);
+                                }
+                            }
+                        }.runTask(plugin);
+                        timerTasks.remove(this);
+                    }
+                };
+                timerTasks.add(task);
+                timer.schedule(task, (long) (entry.getKey() * 1000));
+            }
         }
         return true;
     }
