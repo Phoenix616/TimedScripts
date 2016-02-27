@@ -55,7 +55,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             }
             TimedScript script = plugin.getScriptManager().getScript(args[1]);
             if(action == Action.CREATE) {
-                if(!sender.hasPermission("TimedScripts.command.create")) {
+                if(sender instanceof Player && !sender.hasPermission("TimedScripts.command.create")) {
                     sender.sendMessage(ChatColor.RED + "You don't have the permissions TimedScripts.command.create");
                     return true;
                 }
@@ -81,7 +81,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
 
     private boolean runAction(CommandSender sender, Action action, TimedScript script, String[] args) {
         String perm = "TimedScripts.command." + action.toString().toLowerCase();
-        if(!sender.hasPermission(perm)) {
+        if(sender instanceof Player && !sender.hasPermission(perm)) {
             sender.sendMessage(ChatColor.RED + "You don't have the permissions " + perm);
             return true;
         }
@@ -120,7 +120,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             }
             CommandSender runAs = sender;
             Map<String, String> vars = new HashMap<String, String>();
-            if(args.length > 0 && sender.hasPermission("TimedScripts.command.runwithvars." + script.getName().toLowerCase())) {
+            if(args.length > 0 && sender instanceof Player && !sender.hasPermission("TimedScripts.command.runwithvars." + script.getName().toLowerCase())) {
                 sender.sendMessage(ChatColor.RED + "You don't have the permissions to run this script with variables! (TimedScripts.command.runwithvars." + script.getName().toLowerCase() + ")");
                 return true;
             }
@@ -151,9 +151,9 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                         currentVar = var[0];
                         currentValue.append(var[1].substring(1));
                     } else if("sender".equalsIgnoreCase(var[0])) {
-                        if("console".equalsIgnoreCase(var[1]) && sender.hasPermission("TimedScripts.command.runasconsole")) {
+                        if("console".equalsIgnoreCase(var[1]) && (!(sender instanceof Player)) || sender.hasPermission("TimedScripts.command.runasconsole")) {
                             runAs = plugin.getServer().getConsoleSender();
-                        } else if(sender.hasPermission("TimedScripts.command.runasother")) {
+                        } else if(!(sender instanceof Player) || sender.hasPermission("TimedScripts.command.runasother")) {
                             runAs = plugin.getServer().getPlayer(var[1]);
                             if(runAs == null) {
                                 sender.sendMessage(ChatColor.RED + "Could not find a player with the name " + ChatColor.YELLOW + args[0]);
