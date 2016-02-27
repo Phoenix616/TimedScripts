@@ -43,19 +43,30 @@ public class TimedScripts extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if("timedscripts".equalsIgnoreCase(cmd.getName())) {
             if(args.length > 0) {
-                if("reload".equalsIgnoreCase(args[0])) {
-                    if(sender.hasPermission("TimedScripts.admin")) {
-                        reloadConfig();
-                        if(args.length < 2 || !"true".equalsIgnoreCase(args[1])) {
-                            scriptManager.destroy();
-                            sender.sendMessage(ChatColor.YELLOW + "All running scripts stopped!");
+                if(sender.hasPermission("TimedScripts.admin")) {
+                    boolean stop = false;
+                    boolean reload = false;
+                    for(String arg : args) {
+                        if("reload".equalsIgnoreCase(arg)) {
+                            reload = true;
+                        } else if("stop".equalsIgnoreCase(args[0])) {
+                            stop = true;
                         }
+                    }
+                    if(stop) {
+                        scriptManager.destroy();
+                        sender.sendMessage(ChatColor.YELLOW + "All running scripts stopped!");
+                    }
+                    if(reload) {
+                        reloadConfig();
                         scriptManager = new ScriptManager(this);
                         sender.sendMessage(ChatColor.GREEN + "Scripts reloaded!");
-                    } else {
-                        sender.sendMessage("You don't have the permission TimedScripts.admin");
                     }
-                    return true;
+                    if(!stop && !reload) {
+                        return false;
+                    }
+                } else {
+                    sender.sendMessage("You don't have the permission TimedScripts.admin");
                 }
             } else {
                 sender.sendMessage(ChatColor.AQUA + "List of TimedScripts:");
@@ -66,10 +77,9 @@ public class TimedScripts extends JavaPlugin {
                 } else {
                     sender.sendMessage(ChatColor.RED + "None");
                 }
-                return true;
             }
         }
-        return false;
+        return true;
     }
 
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
