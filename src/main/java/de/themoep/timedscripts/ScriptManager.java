@@ -87,6 +87,7 @@ public class ScriptManager {
                 TimedScript script = new TimedScript(plugin, file);
                 try {
                     plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + script.getName().toLowerCase()));
+                    plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.runwithvars." + script.getName().toLowerCase()));
                 } catch(IllegalArgumentException ignored) { }
                 addScript(script);
             } catch(FileNotFoundException e) {
