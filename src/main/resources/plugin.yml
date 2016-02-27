@@ -22,7 +22,7 @@ permissions:
       default: false
    TimedScripts.command:
       description: Gives permission to the /script command
-      default: false
+      default: op
    TimedScripts.command.edit:
       description: Gives permission to edit scripts
       default: false
