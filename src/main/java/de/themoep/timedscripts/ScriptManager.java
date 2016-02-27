@@ -227,6 +227,7 @@ public class ScriptManager {
             addScript(newScript);
             try {
                 plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + newScript.getName().toLowerCase()));
+                plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.runwithvars." + newScript.getName().toLowerCase()));
             } catch(IllegalArgumentException ignored) { }
             creator.sendMessage(ChatColor.GREEN + "Created new script " + ChatColor.YELLOW + newScript.getName());
             return true;

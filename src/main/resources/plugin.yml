@@ -32,6 +32,12 @@ permissions:
    TimedScripts.command.run:
       description: Gives permission to run scripts
       default: false
+   TimedScripts.command.runasother:
+      description: Gives permission to start scripts as an other player
+      default: false
+   TimedScripts.command.runasconsole:
+      description: Gives permission to start scripts as the console
+      default: false
    TimedScripts.command.create:
       description: Gives permission to create new scripts
       default: false

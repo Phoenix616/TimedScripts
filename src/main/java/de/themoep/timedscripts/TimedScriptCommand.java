@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,11 +115,59 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
 
         } else if(action == Action.RUN) {
             if(sender instanceof Player && !((Player) sender).getUniqueId().equals(script.getCreatorId()) && !sender.hasPermission("TimedScripts.command.run." + script.getName().toLowerCase())) {
-                sender.sendMessage(ChatColor.RED + "You don't have the permissions to run other people's scripts! (TimedScripts.command.run.others)");
+                sender.sendMessage(ChatColor.RED + "You don't have the permissions to run this script! (TimedScripts.command.run." + script.getName().toLowerCase() + ")");
                 return true;
             }
+            CommandSender runAs = sender;
+            Map<String, String> vars = new HashMap<String, String>();
+            if(args.length > 0 && sender.hasPermission("TimedScripts.command.runwithvars." + script.getName().toLowerCase())) {
+                sender.sendMessage(ChatColor.RED + "You don't have the permissions to run this script with variables! (TimedScripts.command.runwithvars." + script.getName().toLowerCase() + ")");
+                return true;
+            }
+            String currentVar = "";
+            StringBuilder currentValue = new StringBuilder();
+            int inQuotes = 0;
+            for(String arg : args) {
+                if((inQuotes > 0 && !arg.contains("=")) || inQuotes > 1) {
+                    if(arg.endsWith("\"")) {
+                        inQuotes = 0;
+                        arg = arg.substring(0, arg.length() - 2);
+                    } else {
+                        inQuotes++;
+                    }
+                    currentValue.append(" ").append(arg);
+                    if(inQuotes == 0) {
+                        vars.put(currentVar, currentValue.toString());
+                        currentValue = new StringBuilder();
+                    }
+                } else {
+                    if(!arg.contains("=")) {
+                        sender.sendMessage(ChatColor.YELLOW + arg + ChatColor.RED + " does not use the correct variable syntax of var=value!");
+                        return false;
+                    }
+                    String[] var = arg.split("=");
+                    if(var[1].startsWith("\"") && !var[1].endsWith("\"")) {
+                        inQuotes = 1;
+                        currentVar = var[0];
+                        currentValue.append(var[1].substring(1));
+                    } else if("sender".equalsIgnoreCase(var[0])) {
+                        if("console".equalsIgnoreCase(var[1]) && sender.hasPermission("TimedScripts.command.runasconsole")) {
+                            runAs = plugin.getServer().getConsoleSender();
+                        } else if(sender.hasPermission("TimedScripts.command.runasother")) {
+                            runAs = plugin.getServer().getPlayer(var[1]);
+                            if(runAs == null) {
+                                sender.sendMessage(ChatColor.RED + "Could not find a player with the name " + ChatColor.YELLOW + args[0]);
+                                return true;
+                            }
+                        }
+                    } else {
+                        vars.put(var[0].toLowerCase(), var[1]);
+                    }
+                }
+            }
+
             sender.sendMessage(ChatColor.GREEN + "Started script " + ChatColor.YELLOW + script.getName());
-            plugin.getScriptManager().runScript(sender, script);
+            plugin.getScriptManager().runScript(runAs, script, vars);
 
         } else if(action == Action.INFO) {
             int commandCount = 0;
