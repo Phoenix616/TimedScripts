@@ -237,7 +237,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 }
                 TimedCommand command = script.setCommand(time, i, commandString.toString());
                 if(command != null) {
-                    sender.sendMessage(ChatColor.GREEN + "Set the command for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " at position " + i + " :");
+                    sender.sendMessage(ChatColor.GREEN + "Set the command for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " at position " + i + ":");
                     sender.sendMessage(ChatColor.YELLOW + "Old #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
                     sender.sendMessage(ChatColor.YELLOW + "New #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + commandString);
                 } else {
