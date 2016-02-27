@@ -16,13 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TimedScripts
@@ -45,7 +44,7 @@ public class ScriptManager {
     private Map<String, TimedScript> scriptMap = new HashMap<String, TimedScript>();
     private Map<String, String> globals = new HashMap<String, String>();
 
-    private Set<TimerTask> timerTasks = new HashSet<TimerTask>();
+    private Map<TimerTask, String> timerTasks = new ConcurrentHashMap<TimerTask, String>();
     private File scriptFolder;
 
     public ScriptManager(TimedScripts plugin) {
@@ -186,17 +185,49 @@ public class ScriptManager {
                         timerTasks.remove(this);
                     }
                 };
-                timerTasks.add(task);
+                timerTasks.put(task, script.getName().toLowerCase());
                 timer.schedule(task, (long) (entry.getKey() * 1000));
             }
         }
+    }
+
+    public boolean deleteScript(String scriptName) {
+        TimedScript script = getScript(scriptName);
+        if(script != null) {
+            return deleteScript(script);
+        }
+        return false;
+    }
+
+    public boolean deleteScript(TimedScript script) {
+        if(script.delete()) {
+            stopScript(script);
+            scriptMap.remove(script.getName());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean stopScript(TimedScript script) {
+        if(!timerTasks.containsValue(script.getName().toLowerCase())) {
+            return false;
+        }
+        Iterator<Map.Entry<TimerTask, String>> taskIt = timerTasks.entrySet().iterator();
+        while(taskIt.hasNext()) {
+            Map.Entry<TimerTask, String> entry = taskIt.next();
+            if(entry.getValue().equals(script.getName().toLowerCase())) {
+                entry.getKey().cancel();
+                taskIt.remove();
+            }
+        }
+        return true;
     }
 
     /**
      * Cancels all timers running
      */
     public void destroy() {
-        Iterator<TimerTask> taskIterator = timerTasks.iterator();
+        Iterator<TimerTask> taskIterator = timerTasks.keySet().iterator();
         while(taskIterator.hasNext()) {
             TimerTask task = taskIterator.next();
             task.cancel();

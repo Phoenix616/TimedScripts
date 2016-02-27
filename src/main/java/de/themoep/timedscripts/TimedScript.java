@@ -291,4 +291,21 @@ public class TimedScript {
         }
         return true;
     }
+
+    /**
+     * Deletes the script on the file system
+     * @return <tt>true</tt> if the file was successfully "deleted" (archived); <tt>false</tt> if that didn't work
+     */
+    public boolean delete() {
+        String path = "-" + file.getPath();
+        int i = 0;
+        while(file.renameTo(new File(path))) {
+            path = "-" + path;
+            i++;
+            if(i > 10) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -221,6 +221,13 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.RED + "An error occurred while saving the script " + script.getName() + "! Please take a look at the exception in the log.");
             }
 
+        } else if(action == Action.DELETE) {
+            if(plugin.getScriptManager().deleteScript(script)) {
+                sender.sendMessage(ChatColor.GREEN + "Script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " deleted!");
+            } else {
+                sender.sendMessage(ChatColor.RED + "An error occurred while deleting the script " + script.getName() + "! Please take a look at the exception in the log.");
+            }
+
         } else {
             sender.sendMessage(ChatColor.RED + "Action " + action + " is not implemented yet!");
         }
