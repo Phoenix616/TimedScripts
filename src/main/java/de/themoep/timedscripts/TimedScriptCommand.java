@@ -117,8 +117,8 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.RED + "You don't have the permissions to run other people's scripts! (TimedScripts.command.run.others)");
                 return true;
             }
-            plugin.getScriptManager().runScript(sender, script);
             sender.sendMessage(ChatColor.GREEN + "Started script " + ChatColor.YELLOW + script.getName());
+            plugin.getScriptManager().runScript(sender, script);
 
         } else if(action == Action.INFO) {
             int commandCount = 0;
