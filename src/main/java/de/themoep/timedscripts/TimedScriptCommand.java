@@ -229,10 +229,10 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
 
     private enum Action {
         CREATE,
-        EDIT("[add <time> <cmd>|set <time> <#> <cmd>|remove <time> [<#>]]"),
-        RUN("[<var=value> ...]"),
         INFO,
         VIEW("[<time>]"),
+        EDIT("[add <time> <cmd>|set <time> <#> <cmd>|remove <time> [<#>]]"),
+        RUN("[<var=value> ...]"),
         SAVE,
         DELETE;
 
