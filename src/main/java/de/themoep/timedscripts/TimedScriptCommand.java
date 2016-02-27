@@ -239,7 +239,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
         private final String usage;
 
         Action() {
-            this.usage = toString().toLowerCase();
+            this.usage = toString().toLowerCase() + " <scriptname>";
         }
 
         Action(String usage) {
