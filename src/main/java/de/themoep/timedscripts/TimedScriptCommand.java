@@ -197,7 +197,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                     }
                     for(int i = 0; i < commands.size(); i++) {
                         TimedCommand command = commands.get(i);
-                        commandList.add("#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
+                        commandList.add(ChatColor.GRAY + "#" + i + " " + ChatColor.WHITE + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
                     }
                 } catch(NumberFormatException e) {
                     sender.sendMessage(ChatColor.RED + "Error: " + args[0] + " is not a valid double number input!");
@@ -207,7 +207,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 for(Map.Entry<Double, List<TimedCommand>> entry : script.getCommands().entrySet()) {
                     for(int i = 0; i < entry.getValue().size(); i++) {
                         TimedCommand command = entry.getValue().get(i);
-                        commandList.add("#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(entry.getKey()) + ": " + ChatColor.GRAY + command);
+                        commandList.add(ChatColor.GRAY + "#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(entry.getKey()) + ": " + ChatColor.GRAY + command);
                     }
                 }
             }
@@ -272,7 +272,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(ChatColor.RED + "Error while trying to add command to script " + ChatColor.YELLOW + script.getName() + ChatColor.RED + "! Take a look at the log for the exact error!");
                 script.getCommands(time).remove(script.getCommands(time).size() - 1);
             }
-            sender.sendMessage(ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
+            sender.sendMessage(ChatColor.WHITE + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
 
         } else if(action == EditAction.SET) {
             if(args.length < 2) {
@@ -287,8 +287,8 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 TimedCommand command = script.setCommand(time, i, commandString.toString());
                 if(command != null) {
                     sender.sendMessage(ChatColor.GREEN + "Set the command for script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " at position " + i + ":");
-                    sender.sendMessage("Old #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
-                    sender.sendMessage("New #" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + commandString);
+                    sender.sendMessage(ChatColor.GRAY + "Old #" + i + " " + ChatColor.WHITE + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
+                    sender.sendMessage(ChatColor.GRAY + "New #" + i + " " + ChatColor.WHITE + Utils.formatTime(time) + ": " + ChatColor.GRAY + commandString);
                 } else {
                     sender.sendMessage(ChatColor.RED + "Error while setting the command. Are you sure there was one at position " + ChatColor.YELLOW + i + ChatColor.RED + "? Maybe try using " + EditAction.ADD.getUsage() + " instead.");
                 }
@@ -307,7 +307,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 TimedCommand command = script.removeCommand(time, i);
                 if(command != null) {
                     sender.sendMessage(ChatColor.GREEN + "Removed the following command from script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + ":");
-                    sender.sendMessage("#" + i + " " + ChatColor.DARK_GRAY + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
+                    sender.sendMessage(ChatColor.GRAY + "#" + i + " " + ChatColor.WHITE + Utils.formatTime(time) + ": " + ChatColor.GRAY + command);
                 } else {
                     sender.sendMessage(ChatColor.RED + "The script " + ChatColor.YELLOW + script.getName() + ChatColor.RED + " does not have a command at the " + ChatColor.YELLOW + i + "." + ChatColor.RED + " position at " + ChatColor.YELLOW + time + ChatColor.RED + " seconds!");
                 }
