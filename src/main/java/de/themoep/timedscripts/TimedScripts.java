@@ -76,7 +76,7 @@ public class TimedScripts extends JavaPlugin {
         if(!"timedscripts".equalsIgnoreCase(cmd.getName())) {
             return null;
         }
-        return args.length == 0 || "reload".startsWith(args[0].toLowerCase()) ? Collections.singletonList("reload") : new ArrayList<String>();
+        return args.length == 0 || (args.length == 1 && "reload".startsWith(args[0].toLowerCase())) ? Collections.singletonList("reload") : new ArrayList<String>();
     }
 
 }
