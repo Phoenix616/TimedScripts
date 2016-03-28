@@ -174,11 +174,15 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             for(List<TimedCommand> commands : script.getCommands().values()) {
                 commandCount += commands.size();
             }
-            sender.sendMessage(new String[]{
-                    ChatColor.AQUA + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.AQUA + ":",
-                    ChatColor.AQUA + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.AQUA + "(" + script.getCreatorId() + ")",
-                    ChatColor.AQUA + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.AQUA + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.AQUA + " different times!"
-            });
+            List<String> msg = new ArrayList<String>();
+            msg.add(ChatColor.AQUA + "Info for script " + ChatColor.YELLOW + script.getName() + ChatColor.AQUA + ":");
+            if(!plugin.getConfig().getString("webinterface", "").isEmpty()) {
+                msg.add(ChatColor.AQUA + "Link: " + ChatColor.YELLOW + plugin.getConfig().getString("webinterface", "").replace("%script%", script.getName()));
+            }
+            msg.add(ChatColor.AQUA + "Creator: " + ChatColor.YELLOW + script.getCreatorName() + ChatColor.AQUA + "(" + script.getCreatorId() + ")");
+            msg.add(ChatColor.AQUA + "Contains " + ChatColor.YELLOW + commandCount + ChatColor.AQUA + " command" + (commandCount != 1 ? "s" : "") + " at " + ChatColor.YELLOW + script.getCommands().size() + ChatColor.AQUA + " different times!");
+
+            sender.sendMessage(msg.toArray(new String[msg.size()]));
 
         } else if(action == Action.VIEW) {
             if(script.getCommands().size() == 0) {

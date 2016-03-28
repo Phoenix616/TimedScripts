@@ -1,3 +1,5 @@
+# Url for a webinterface to link to, use %script% to define where the script name will be inserted
+webinterface: ""
 globalvariables:
 # some global variables
 # for example %author% in all commands will be replaced with Phoenix616 if not overridden on execution
