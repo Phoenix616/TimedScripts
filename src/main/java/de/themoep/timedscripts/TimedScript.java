@@ -257,7 +257,6 @@ public class TimedScript {
         BufferedWriter writer = null;
         try {
             file.createNewFile();
-            file.setWritable(true);
             writer = new BufferedWriter(new FileWriter(file));
 
             for(String headLine : getFileHead()) {
