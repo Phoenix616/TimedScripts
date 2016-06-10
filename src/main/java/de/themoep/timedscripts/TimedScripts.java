@@ -43,7 +43,7 @@ public class TimedScripts extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if("timedscripts".equalsIgnoreCase(cmd.getName())) {
             if(args.length > 0) {
-                if(sender.hasPermission("TimedScripts.admin")) {
+                if(sender.hasPermission("timedscripts.admin")) {
                     boolean stop = false;
                     boolean reload = false;
                     for(String arg : args) {

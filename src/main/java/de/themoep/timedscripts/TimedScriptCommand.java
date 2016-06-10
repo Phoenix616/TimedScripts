@@ -55,7 +55,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             }
             TimedScript script = plugin.getScriptManager().getScript(args[1]);
             if(action == Action.CREATE) {
-                if(sender instanceof Player && !sender.hasPermission("TimedScripts.command.create")) {
+                if(sender instanceof Player && !sender.hasPermission("timedscripts.command.create")) {
                     sender.sendMessage(ChatColor.RED + "You don't have the permissions TimedScripts.command.create");
                     return true;
                 }
@@ -80,7 +80,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean runAction(CommandSender sender, Action action, TimedScript script, String[] args) {
-        String perm = "TimedScripts.command." + action.toString().toLowerCase();
+        String perm = "timedscripts.command." + action.toString().toLowerCase();
         if(sender instanceof Player && !sender.hasPermission(perm)) {
             sender.sendMessage(ChatColor.RED + "You don't have the permissions " + perm);
             return true;
@@ -114,13 +114,13 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             }
 
         } else if(action == Action.RUN) {
-            if(sender instanceof Player && !((Player) sender).getUniqueId().equals(script.getCreatorId()) && !sender.hasPermission("TimedScripts.command.run." + script.getName().toLowerCase())) {
+            if(sender instanceof Player && !((Player) sender).getUniqueId().equals(script.getCreatorId()) && !sender.hasPermission("timedscripts.command.run." + script.getName().toLowerCase())) {
                 sender.sendMessage(ChatColor.RED + "You don't have the permissions to run this script! (TimedScripts.command.run." + script.getName().toLowerCase() + ")");
                 return true;
             }
             CommandSender runAs = sender;
             Map<String, String> vars = new HashMap<String, String>();
-            if(args.length > 0 && sender instanceof Player && !sender.hasPermission("TimedScripts.command.runwithvars." + script.getName().toLowerCase())) {
+            if(args.length > 0 && sender instanceof Player && !sender.hasPermission("timedscripts.command.runwithvars." + script.getName().toLowerCase())) {
                 sender.sendMessage(ChatColor.RED + "You don't have the permissions to run this script with variables! (TimedScripts.command.runwithvars." + script.getName().toLowerCase() + ")");
                 return true;
             }
@@ -151,9 +151,9 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                         currentVar = var[0];
                         currentValue.append(var[1].substring(1));
                     } else if("sender".equalsIgnoreCase(var[0])) {
-                        if("console".equalsIgnoreCase(var[1]) && (!(sender instanceof Player)) || sender.hasPermission("TimedScripts.command.runasconsole")) {
+                        if("console".equalsIgnoreCase(var[1]) && (!(sender instanceof Player)) || sender.hasPermission("timedscripts.command.runasconsole")) {
                             runAs = plugin.getServer().getConsoleSender();
-                        } else if(!(sender instanceof Player) || sender.hasPermission("TimedScripts.command.runasother")) {
+                        } else if(!(sender instanceof Player) || sender.hasPermission("timedscripts.command.runasother")) {
                             runAs = plugin.getServer().getPlayer(var[1]);
                             if(runAs == null) {
                                 sender.sendMessage(ChatColor.RED + "Could not find a player with the name " + ChatColor.YELLOW + args[0]);
@@ -267,7 +267,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean runEditAction(CommandSender sender, EditAction action, double time, TimedScript script, String[] args) {
-        if(sender instanceof Player && !((Player) sender).getUniqueId().equals(script.getCreatorId()) && !sender.hasPermission("TimedScripts.command.edit.others")) {
+        if(sender instanceof Player && !((Player) sender).getUniqueId().equals(script.getCreatorId()) && !sender.hasPermission("timedscripts.command.edit.others")) {
             sender.sendMessage(ChatColor.RED + "You don't have the permissions to edit other people's scripts! (TimedScripts.command.edit.others)");
             return true;
         }
