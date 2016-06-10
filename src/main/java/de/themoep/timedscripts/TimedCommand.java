@@ -25,17 +25,21 @@ import java.util.regex.Pattern;
  */
 public class TimedCommand {
     private final String command;
-    private Set<String> variables = new HashSet<String>();
+    private Map<String, Variable> variables = new HashMap<String, Variable>();
 
     public TimedCommand(String command) {
         command = command.trim();
         if(command.startsWith("/")) {
             command = command.substring(1);
         }
-        Pattern pattern = Pattern.compile("\\%(\\w+?)\\%");
+        Pattern pattern = Pattern.compile("\\%(\\w+?)(=(\\w+?)|)\\%");
         Matcher matcher = pattern.matcher(command);
-        while (matcher.find()) {
-            variables.add(matcher.group(1));
+        while(matcher.find()) {
+            Variable var = new Variable(matcher.group(1));
+            if(matcher.groupCount() >= 3) {
+                var.setDefault(matcher.group(3));
+            }
+            variables.put(var.getName(), var);
         }
         this.command = command;
     }
@@ -51,20 +55,17 @@ public class TimedCommand {
     /**
      * Get the command string with variables in it replaced
      * @param replacements The variable values
-     * @return The command string; passing null or an empty Map will just get the unreplaced string
+     * @return The command string; passing null will just get the unreplaced string
      */
     public String getCommand(Map<String, String> replacements) {
         String returnCommand = command;
         if(replacements != null) {
-            for(Map.Entry<String, String> repl : replacements.entrySet()) {
-                String key = repl.getKey();
-                for(String var : variables) {
-                    if(key.toLowerCase().equals(var.toLowerCase())) {
-                        key = var;
-                        break;
-                    }
+            for(Variable var : variables.values()) {
+                String value = replacements.get(var.getName());
+                if(value == null) {
+                    value = var.getDefault();
                 }
-                returnCommand = returnCommand.replace("%" + key + "%", repl.getValue());
+                returnCommand = returnCommand.replace("%" + var.getName() + "%", value);
             }
         }
         return returnCommand.replace("\\%", "%");
@@ -85,12 +86,21 @@ public class TimedCommand {
      * @return <tt>true</tt> if all variables have replacements; <tt>false</tt> if not
      */
     private boolean checkVariables(Set<String> replacements) {
-        for(String var : variables) {
-            if(!inSet(var, replacements)) {
+        for(Variable var : variables.values()) {
+            if(!inSet(var.getName(), replacements) && !var.hasDefault()) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Get a variable that is in this command
+     * @param name The name of the variable (case insensitive)
+     * @return The Variable or <tt>null</tt> if not found
+     */
+    public Variable getVariable(String name) {
+        return variables.get(name.toLowerCase());
     }
 
     /**
@@ -100,6 +110,8 @@ public class TimedCommand {
      * @return Whether or not a string is in the set (case insensitive)
      */
     private boolean inSet(String string, Set<String> set) {
+        if(set.contains(string))
+            return true;
         for(String s : set) {
             if(s.equalsIgnoreCase(string)) {
                 return true;
@@ -112,12 +124,42 @@ public class TimedCommand {
      * Get a set of variables that are in this command
      * @return A set of variables
      */
-    public Set<String> getVariables() {
-        return new HashSet<String>(variables);
+    public Set<Variable> getVariables() {
+        return new HashSet<Variable>(variables.values());
     }
 
     @Override
     public String toString() {
         return command;
+    }
+
+    private class Variable {
+        private final String name;
+        private String defaultValue = "";
+
+        public Variable(String name) {
+            this.name = name.toLowerCase();
+        }
+
+        public Variable(String name, String defaultValue) {
+            this(name);
+            this.defaultValue = defaultValue;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDefault() {
+            return defaultValue;
+        }
+
+        public boolean hasDefault() {
+            return !getDefault().isEmpty();
+        }
+
+        public void setDefault(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
     }
 }

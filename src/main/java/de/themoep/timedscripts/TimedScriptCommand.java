@@ -137,7 +137,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                     }
                     currentValue.append(" ").append(arg);
                     if(inQuotes == 0) {
-                        vars.put(currentVar, currentValue.toString());
+                        vars.put(currentVar.toLowerCase(), currentValue.toString());
                         currentValue = new StringBuilder();
                     }
                 } else {
