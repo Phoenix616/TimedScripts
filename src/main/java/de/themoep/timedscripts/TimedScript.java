@@ -10,12 +10,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -257,6 +262,17 @@ public class TimedScript {
         BufferedWriter writer = null;
         try {
             file.createNewFile();
+            Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+            //add owners permission
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            //add group permissions
+            perms.add(PosixFilePermission.GROUP_READ);
+            perms.add(PosixFilePermission.GROUP_WRITE);
+            //add others permissions
+            perms.add(PosixFilePermission.OTHERS_READ);
+            Files.setPosixFilePermissions(Paths.get(file.getPath()), perms);
+
             writer = new BufferedWriter(new FileWriter(file));
 
             for(String headLine : getFileHead()) {
