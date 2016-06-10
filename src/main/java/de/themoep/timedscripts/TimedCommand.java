@@ -32,7 +32,7 @@ public class TimedCommand {
         if(command.startsWith("/")) {
             command = command.substring(1);
         }
-        Pattern pattern = Pattern.compile("\\%(\\w+?)(=(\\.+?)|)\\%");
+        Pattern pattern = Pattern.compile("\\%(\\w+?)(=(.+?)|)\\%");
         Matcher matcher = pattern.matcher(command);
         while(matcher.find()) {
             Variable var = new Variable(matcher.group(1));
@@ -65,7 +65,7 @@ public class TimedCommand {
                 if(value == null) {
                     value = var.getDefault();
                 }
-                returnCommand = returnCommand.replace("%" + var.getName() + "%", value);
+                returnCommand = returnCommand.replaceAll("\\%" + var.getName() + "(=.+?|)\\%", value);
             }
         }
         return returnCommand.replace("\\%", "%");
