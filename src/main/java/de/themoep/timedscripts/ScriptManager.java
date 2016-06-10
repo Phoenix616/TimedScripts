@@ -132,7 +132,7 @@ public class ScriptManager {
         return true;
     }
 
-    public void runScript(final CommandSender sender, TimedScript script, Map<String, String> replacements) {
+    public void runScript(final CommandSender sender, TimedScript script, Map<String, String> vars) {
         String senderName = sender.getName();
         String senderWorld = plugin.getServer().getWorlds().get(0).getName();
         Location senderLoc = plugin.getServer().getWorlds().get(0).getSpawnLocation();
@@ -149,6 +149,7 @@ public class ScriptManager {
             senderLoc = blockSender.getBlock().getLocation();
         }
 
+        Map<String, String> replacements = new HashMap<String, String>();
         replacements.put("sender", senderName);
         replacements.put("senderworld", senderWorld);
         replacements.put("senderx", String.valueOf(senderLoc.getBlockX()));
@@ -157,6 +158,7 @@ public class ScriptManager {
         replacements.put("senderyaw", String.valueOf(senderLoc.getYaw()));
         replacements.put("senderpitch", String.valueOf(senderLoc.getPitch()));
         replacements.put("senderlocation", senderLoc.getBlockX() + " " + senderLoc.getBlockY() + " " + senderLoc.getBlockZ());
+        replacements.putAll(vars);
 
         Timer timer = new Timer();
         Map<Double, List<TimedCommand>> commands = script.getCommands();
