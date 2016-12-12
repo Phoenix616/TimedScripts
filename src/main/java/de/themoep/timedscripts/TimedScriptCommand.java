@@ -131,7 +131,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                 if((inQuotes > 0 && !arg.contains("=")) || inQuotes > 1) {
                     if(arg.endsWith("\"")) {
                         inQuotes = 0;
-                        arg = arg.substring(0, arg.length() - 2);
+                        arg = arg.substring(0, arg.length() - 1);
                     } else {
                         inQuotes++;
                     }
