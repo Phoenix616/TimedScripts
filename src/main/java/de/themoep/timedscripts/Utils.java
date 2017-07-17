@@ -1,5 +1,7 @@
 package de.themoep.timedscripts;
 
+import java.util.Map;
+
 /**
  * TimedScripts
  * Copyright (C) 2016 Max Lee (https://github.com/Phoenix616/)
@@ -23,5 +25,12 @@ public class Utils {
             return String.format("%d", (long) time);
         }
         return String.format("%s", time);
+    }
+
+    public static String replaceReplacements(String value, Map<String, String> replacements) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            value = value.replace("%" + entry.getKey() + "%", entry.getValue());
+        }
+        return value;
     }
 }

@@ -165,7 +165,12 @@ public class ScriptManager {
         for(Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
             final List<String> commandList = new ArrayList<String>();
             for(TimedCommand command : entry.getValue()) {
-                commandList.add(command.getCommand(replacements));
+                try {
+                    commandList.add(command.getCommand(replacements));
+                } catch (TimedCommand.MissingVariableException e) {
+                    sender.sendMessage(ChatColor.RED + "Error while executing script " + script.getName() + "! " + ChatColor.YELLOW + e.getMessage());
+                    return;
+                }
             }
 
             if(entry.getKey() == 0) {

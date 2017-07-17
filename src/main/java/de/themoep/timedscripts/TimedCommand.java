@@ -49,7 +49,11 @@ public class TimedCommand {
      * @return The pure command string
      */
     public String getCommand() {
-        return getCommand(null);
+        try {
+            return getCommand(null);
+        } catch (MissingVariableException ignored) {
+            return command;
+        }
     }
 
     /**
@@ -57,14 +61,18 @@ public class TimedCommand {
      * @param replacements The variable values
      * @return The command string; passing null will just get the unreplaced string
      */
-    public String getCommand(Map<String, String> replacements) {
+    public String getCommand(Map<String, String> replacements) throws MissingVariableException {
         String returnCommand = command;
         if(replacements != null) {
             for(Variable var : variables.values()) {
                 String value = replacements.get(var.getName());
-                if(value == null) {
+                if (value == null) {
                     value = var.getDefault();
                 }
+                if (value == null) {
+                    throw new MissingVariableException("No value nor defualt value set for variable " + var.getName());
+                }
+                value = Utils.replaceReplacements(value, replacements);
                 returnCommand = returnCommand.replaceAll("\\%" + var.getName() + "(=.+?|)\\%", value);
             }
         }
@@ -135,7 +143,7 @@ public class TimedCommand {
 
     private class Variable {
         private final String name;
-        private String defaultValue = "";
+        private String defaultValue = null;
 
         public Variable(String name) {
             this.name = name.toLowerCase();
@@ -155,11 +163,17 @@ public class TimedCommand {
         }
 
         public boolean hasDefault() {
-            return !getDefault().isEmpty();
+            return getDefault() != null;
         }
 
         public void setDefault(String defaultValue) {
             this.defaultValue = defaultValue;
+        }
+    }
+
+    public class MissingVariableException extends Exception {
+        public MissingVariableException(String message) {
+            super(message);
         }
     }
 }
