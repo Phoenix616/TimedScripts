@@ -146,7 +146,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                         return false;
                     }
                     String[] var = arg.split("=");
-                    if(var[1].startsWith("\"") && !var[1].endsWith("\"")) {
+                    if(var.length > 0 && var[1].startsWith("\"") && !var[1].endsWith("\"")) {
                         inQuotes = 1;
                         currentVar = var[0];
                         currentValue.append(var[1].substring(1));
@@ -161,7 +161,7 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
                             }
                         }
                     } else {
-                        vars.put(var[0].toLowerCase(), var[1]);
+                        vars.put(var[0].toLowerCase(), var.length > 0 ? var[1] : "");
                     }
                 }
             }
