@@ -26,11 +26,4 @@ public class Utils {
         }
         return String.format("%s", time);
     }
-
-    public static String replaceReplacements(String value, Map<String, String> replacements) {
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            value = value.replace("%" + entry.getKey() + "%", entry.getValue());
-        }
-        return value;
-    }
 }

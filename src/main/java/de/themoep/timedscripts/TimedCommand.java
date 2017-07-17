@@ -72,11 +72,18 @@ public class TimedCommand {
                 if (value == null) {
                     throw new MissingVariableException("No value nor defualt value set for variable " + var.getName());
                 }
-                value = Utils.replaceReplacements(value, replacements);
+                value = replaceVariables(value, replacements);
                 returnCommand = returnCommand.replaceAll("\\%" + var.getName() + "(=.+?|)\\%", value);
             }
         }
         return returnCommand.replace("\\%", "%");
+    }
+
+    private String replaceVariables(String value, Map<String, String> replacements) {
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            value = value.replace("$" + entry.getKey() + "$", entry.getValue());
+        }
+        return value.replace("\\$", "$");
     }
 
     /**
