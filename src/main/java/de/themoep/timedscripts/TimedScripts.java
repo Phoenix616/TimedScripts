@@ -6,10 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TimedScripts
@@ -120,7 +118,25 @@ public class TimedScripts extends JavaPlugin {
         if (!"timedscripts".equalsIgnoreCase(cmd.getName())) {
             return null;
         }
-        return args.length == 0 || (args.length == 1 && "reload".startsWith(args[0].toLowerCase())) ? Collections.singletonList("reload") : new ArrayList<String>();
+
+        String[] subCommands = {
+                "reload",
+                "load",
+                "stop"
+        };
+        List<String> completions = new ArrayList<>();
+        for (String string : subCommands) {
+            if (args.length == 0 || args[args.length - 1].toLowerCase().startsWith(string.toLowerCase())) {
+                completions.add(string);
+            }
+        }
+        if (args.length > 0) {
+            scriptManager.getScripts().stream()
+                    .filter(script -> args.length == 1 || args[args.length - 1].equalsIgnoreCase(script.getName()))
+                    .sorted(Comparator.comparing(s -> s.getName().toLowerCase()))
+                    .forEachOrdered((script) -> completions.add(script.getName()));
+        }
+        return completions;
     }
 
 }
