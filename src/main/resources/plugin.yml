@@ -7,13 +7,13 @@ commands:
    timedscripts:
       aliases: [scripts]
       description: Main plugin command for adminstrative purposes
-      usage: /<command> [reload [stop]|stop]
+      usage: /<command> [load|reload|stop] [<script>]
       permission: timedscripts.command
       permission-message: You don't have the permission <permission>
    timedscript:
       aliases: [script]
       description: Command to run and edit scripts
-      usage: /<command> <help|create|edit|run|info|view|save|delete>
+      usage: /<command> <help|create|edit|run|info|view|save|delete|stop|reload>
       permission: timedscripts.command
       permission-message: You don't have the permission <permission>
 permissions:
@@ -52,4 +52,10 @@ permissions:
       default: false
    timedscripts.command.delete:
       description: Gives permission to delete scripts
+      default: false
+   timedscripts.command.stop:
+      description: Gives permission to stop scripts
+      default: false
+   timedscripts.command.reload:
+      description: Gives permission to reload scripts
       default: false

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TimedScripts
@@ -33,6 +34,7 @@ public class TimedScripts extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
         scriptManager = new ScriptManager(this);
+        scriptManager.loadScripts();
         getCommand("timedscript").setExecutor(new TimedScriptCommand(this));
     }
 
@@ -41,28 +43,60 @@ public class TimedScripts extends JavaPlugin {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if("timedscripts".equalsIgnoreCase(cmd.getName())) {
-            if(args.length > 0) {
-                if(sender.hasPermission("timedscripts.admin")) {
+        if ("timedscripts".equalsIgnoreCase(cmd.getName())) {
+            if (args.length > 0) {
+                if (sender.hasPermission("timedscripts.admin")) {
                     boolean stop = false;
                     boolean reload = false;
-                    for(String arg : args) {
-                        if("reload".equalsIgnoreCase(arg)) {
+                    List<String> scripts = new ArrayList<>();
+                    for (String arg : args) {
+                        if ("load".equalsIgnoreCase(arg) || "reload".equalsIgnoreCase(arg)) {
                             reload = true;
-                        } else if("stop".equalsIgnoreCase(args[0])) {
+                        } else if ("stop".equalsIgnoreCase(args[0])) {
                             stop = true;
+                        } else {
+                            scripts.add(arg);
                         }
                     }
-                    if(stop) {
-                        scriptManager.destroy();
-                        sender.sendMessage(ChatColor.YELLOW + "All running scripts stopped!");
+                    if (stop) {
+                        if (scripts.isEmpty()) {
+                            scriptManager.destroy();
+                            sender.sendMessage(ChatColor.YELLOW + "All running scripts stopped!");
+                        } else {
+                            for (String scriptName : scripts) {
+                                TimedScript script = scriptManager.getScript(scriptName);
+                                if (script != null) {
+                                    if (scriptManager.stopScript(script)) {
+                                        sender.sendMessage(ChatColor.YELLOW + "Script " + script.getName() + " stopped!");
+                                    } else {
+                                        sender.sendMessage(ChatColor.YELLOW + "Script "+ script.getName() + " was not running!");
+                                    }
+                                } else {
+                                    sender.sendMessage(ChatColor.RED + "No script with the name " + scriptName + " found!");
+                                    return false;
+                                }
+                            }
+                        }
                     }
-                    if(reload) {
+                    if (reload) {
                         reloadConfig();
-                        scriptManager = new ScriptManager(this);
-                        sender.sendMessage(ChatColor.GREEN + "Scripts reloaded!");
+                        getServer().getScheduler().runTaskAsynchronously(this, () -> {
+                            if (scripts.isEmpty()) {
+                                scriptManager.loadScripts();
+                                sender.sendMessage(ChatColor.GREEN + "All scripts reloaded!");
+                            } else {
+                                for (String scriptName : scripts) {
+                                    TimedScript script = scriptManager.loadScript(scriptName);
+                                    if (script != null) {
+                                        sender.sendMessage(ChatColor.GREEN + script.getName() + " loaded!");
+                                    } else {
+                                        sender.sendMessage(ChatColor.RED + scriptName + " could not be loaded? Please take a look at the log");
+                                    }
+                                }
+                            }
+                        });
                     }
-                    if(!stop && !reload) {
+                    if (!stop && !reload) {
                         return false;
                     }
                 } else {
@@ -70,8 +104,8 @@ public class TimedScripts extends JavaPlugin {
                 }
             } else {
                 sender.sendMessage(ChatColor.AQUA + "List of TimedScripts:");
-                if(getScriptManager().getScripts().size() > 0) {
-                    for(TimedScript script : getScriptManager().getScripts()) {
+                if (getScriptManager().getScripts().size() > 0) {
+                    for (TimedScript script : getScriptManager().getScripts()) {
                         sender.sendMessage(" " + script.getName() + " by " + script.getCreatorName());
                     }
                 } else {
@@ -83,7 +117,7 @@ public class TimedScripts extends JavaPlugin {
     }
 
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!"timedscripts".equalsIgnoreCase(cmd.getName())) {
+        if (!"timedscripts".equalsIgnoreCase(cmd.getName())) {
             return null;
         }
         return args.length == 0 || (args.length == 1 && "reload".startsWith(args[0].toLowerCase())) ? Collections.singletonList("reload") : new ArrayList<String>();

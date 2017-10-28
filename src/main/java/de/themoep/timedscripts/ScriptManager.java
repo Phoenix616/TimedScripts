@@ -44,22 +44,24 @@ public class ScriptManager {
     private Map<String, TimedScript> scriptMap = new HashMap<String, TimedScript>();
     private Map<String, String> globals = new HashMap<String, String>();
 
-    private Map<TimerTask, String> timerTasks = new ConcurrentHashMap<TimerTask, String>();
+    private Map<TimerTask, String> timerTasks = new ConcurrentHashMap<>();
     private File scriptFolder;
 
     public ScriptManager(TimedScripts plugin) {
         this.plugin = plugin;
+    }
+
+    public void loadScripts() {
         ConfigurationSection globalSection = plugin.getConfig().getConfigurationSection("globalvariables");
-        if(globalSection != null) {
-            for(String name : globalSection.getKeys(false)) {
+        if (globalSection != null) {
+            for (String name : globalSection.getKeys(false)) {
                 setGlobalVariable(name, globalSection.getString(name));
             }
         }
-
         plugin.getLogger().info("Loading scripts from folder...");
         scriptFolder = new File(plugin.getDataFolder(), "scripts");
-        if(!scriptFolder.exists()) {
-            if(scriptFolder.mkdir()) {
+        if (!scriptFolder.exists()) {
+            if (scriptFolder.mkdir()) {
                 plugin.getLogger().info("Scripts folder did not exist. Created it!");
             } else {
                 plugin.getLogger().severe("Failed to create scripts folder!");
@@ -67,36 +69,52 @@ public class ScriptManager {
                 return;
             }
         }
-        if(!scriptFolder.isDirectory()) {
+        if (!scriptFolder.isDirectory()) {
             plugin.getLogger().severe("Scripts folder is not a directory. Wat?");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             return;
         }
-        File[] scriptFiles = scriptFolder.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return !name.startsWith("-") && name.endsWith(".txt");
-            }
-        });
-        if(scriptFiles == null || scriptFiles.length == 0) {
+        File[] scriptFiles = scriptFolder.listFiles((dir, name) -> !name.startsWith("-") && name.endsWith(".txt"));
+        if (scriptFiles == null || scriptFiles.length == 0) {
             plugin.getLogger().info("No script files in scripts folder found!");
             return;
         }
-        for(File file : scriptFiles) {
+        for (File file : scriptFiles) {
             try {
-                TimedScript script = new TimedScript(plugin, file);
-                try {
-                    plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + script.getName().toLowerCase()));
-                    plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.runwithvars." + script.getName().toLowerCase()));
-                } catch(IllegalArgumentException ignored) { }
-                addScript(script);
-            } catch(FileNotFoundException e) {
+                loadScript(file);
+            } catch (FileNotFoundException e) {
                 plugin.getLogger().severe("Script " + file.getName() + " not found in scripts folder? Where did it go?");
                 e.printStackTrace();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 plugin.getLogger().severe("Error while loading script " + file.getName() + "!");
                 e.printStackTrace();
             }
         }
+    }
+
+    public TimedScript loadScript(String name) {
+        try {
+            return loadScript(new File(scriptFolder, name + ".txt"));
+        } catch (FileNotFoundException e) {
+            plugin.getLogger().severe("Script " + name + ".txt not found in scripts folder? Where did it go?");
+            e.printStackTrace();
+        } catch (IOException e) {
+            plugin.getLogger().severe("Error while loading script " + name + ".txt!");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public TimedScript loadScript(File file) throws IOException {
+        TimedScript script = new TimedScript(plugin, file);
+        try {
+            plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + script.getName().toLowerCase()));
+            plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.runwithvars." + script.getName().toLowerCase()));
+        } catch (IllegalArgumentException ignored) {
+            // Permission already registered
+        }
+        addScript(script);
+        return script;
     }
 
     public String setGlobalVariable(String name, String value) {
@@ -116,16 +134,16 @@ public class ScriptManager {
     }
 
     public boolean runScript(CommandSender sender, String name) {
-        return runScript(sender, name, new HashMap<String, String>());
+        return runScript(sender, name, new HashMap<>());
     }
 
     public void runScript(CommandSender sender, TimedScript script) {
-        runScript(sender, script, new HashMap<String, String>());
+        runScript(sender, script, new HashMap<>());
     }
 
     public boolean runScript(CommandSender sender, String name, Map<String, String> replacements) {
         TimedScript script = getScript(name);
-        if(script == null) {
+        if (script == null) {
             return false;
         }
         runScript(sender, script, replacements);
@@ -136,14 +154,14 @@ public class ScriptManager {
         String senderName = sender.getName();
         String senderWorld = plugin.getServer().getWorlds().get(0).getName();
         Location senderLoc = plugin.getServer().getWorlds().get(0).getSpawnLocation();
-        if(sender instanceof Entity) {
+        if (sender instanceof Entity) {
             Entity entity = (Entity) sender;
             senderWorld = entity.getWorld().getName();
             senderLoc = entity.getLocation();
-            if(entity.getCustomName() != null) {
+            if (entity.getCustomName() != null) {
                 senderName = entity.getCustomName();
             }
-        } else if(sender instanceof BlockCommandSender) {
+        } else if (sender instanceof BlockCommandSender) {
             BlockCommandSender blockSender = (BlockCommandSender) sender;
             senderWorld = blockSender.getBlock().getWorld().getName();
             senderLoc = blockSender.getBlock().getLocation();
@@ -162,9 +180,9 @@ public class ScriptManager {
 
         Timer timer = new Timer();
         Map<Double, List<TimedCommand>> commands = script.getCommands();
-        for(Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
+        for (Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
             final List<String> commandList = new ArrayList<String>();
-            for(TimedCommand command : entry.getValue()) {
+            for (TimedCommand command : entry.getValue()) {
                 try {
                     commandList.add(command.getCommand(replacements));
                 } catch (TimedCommand.MissingVariableException e) {
@@ -173,8 +191,8 @@ public class ScriptManager {
                 }
             }
 
-            if(entry.getKey() == 0) {
-                for(String command : commandList) {
+            if (entry.getKey() == 0) {
+                for (String command : commandList) {
                     plugin.getServer().dispatchCommand(sender, command);
                 }
             } else {
@@ -184,7 +202,7 @@ public class ScriptManager {
                     public void run() {
                         new BukkitRunnable() {
                             public void run() {
-                                for(String command : commandList) {
+                                for (String command : commandList) {
                                     plugin.getServer().dispatchCommand(sender, command);
                                 }
                             }
@@ -200,14 +218,14 @@ public class ScriptManager {
 
     public boolean deleteScript(String scriptName) {
         TimedScript script = getScript(scriptName);
-        if(script != null) {
+        if (script != null) {
             return deleteScript(script);
         }
         return false;
     }
 
     public boolean deleteScript(TimedScript script) {
-        if(script.delete()) {
+        if (script.delete()) {
             stopScript(script);
             scriptMap.remove(script.getName());
             return true;
@@ -216,13 +234,13 @@ public class ScriptManager {
     }
 
     public boolean stopScript(TimedScript script) {
-        if(!timerTasks.containsValue(script.getName().toLowerCase())) {
+        if (!timerTasks.containsValue(script.getName().toLowerCase())) {
             return false;
         }
         Iterator<Map.Entry<TimerTask, String>> taskIt = timerTasks.entrySet().iterator();
-        while(taskIt.hasNext()) {
+        while (taskIt.hasNext()) {
             Map.Entry<TimerTask, String> entry = taskIt.next();
-            if(entry.getValue().equals(script.getName().toLowerCase())) {
+            if (entry.getValue().equals(script.getName().toLowerCase())) {
                 entry.getKey().cancel();
                 taskIt.remove();
             }
@@ -235,7 +253,7 @@ public class ScriptManager {
      */
     public void destroy() {
         Iterator<TimerTask> taskIterator = timerTasks.keySet().iterator();
-        while(taskIterator.hasNext()) {
+        while (taskIterator.hasNext()) {
             TimerTask task = taskIterator.next();
             task.cancel();
             taskIterator.remove();
@@ -252,22 +270,23 @@ public class ScriptManager {
 
     /**
      * Helper method to create, add and save a new script. The creator gets send messages about the outcome of the method.
-     * @param name The name of the script
+     * @param name    The name of the script
      * @param creator The creator of the script
      * @return <tt>true</tt> if a new script was created; <tt>false</tt> if an error occurred
      */
     public boolean newScript(String name, CommandSender creator) {
-        if(getScript(name) != null) {
+        if (getScript(name) != null) {
             creator.sendMessage(ChatColor.RED + "There already exists a script with the name " + ChatColor.YELLOW + name);
             return false;
         }
         TimedScript newScript = new TimedScript(getFolder(), name, creator);
-        if(newScript.save()) {
+        if (newScript.save()) {
             addScript(newScript);
             try {
                 plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.run." + newScript.getName().toLowerCase()));
                 plugin.getServer().getPluginManager().addPermission(new Permission("TimedScripts.command.runwithvars." + newScript.getName().toLowerCase()));
-            } catch(IllegalArgumentException ignored) { }
+            } catch (IllegalArgumentException ignored) {
+            }
             creator.sendMessage(ChatColor.GREEN + "Created new script " + ChatColor.YELLOW + newScript.getName());
             return true;
         } else {

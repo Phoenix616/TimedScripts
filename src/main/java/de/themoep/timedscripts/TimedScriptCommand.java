@@ -226,12 +226,26 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
             }
 
         } else if(action == Action.DELETE) {
-            if(plugin.getScriptManager().deleteScript(script)) {
+            if (plugin.getScriptManager().deleteScript(script)) {
                 sender.sendMessage(ChatColor.GREEN + "Script " + ChatColor.YELLOW + script.getName() + ChatColor.GREEN + " deleted!");
             } else {
                 sender.sendMessage(ChatColor.RED + "An error occurred while deleting the script " + script.getName() + "! Please take a look at the exception in the log.");
             }
 
+        } else if (action == Action.STOP) {
+            if (plugin.getScriptManager().stopScript(script)) {
+                sender.sendMessage(ChatColor.YELLOW + "Script " + script.getName() + " stopped!");
+            } else {
+                sender.sendMessage(ChatColor.YELLOW + "Script "+ script.getName() + " was not running!");
+            }
+        } else if (action == Action.RELOAD) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                if (plugin.getScriptManager().loadScript(script.getName()) != null) {
+                    sender.sendMessage(ChatColor.GREEN + script.getName() + " reloaded!");
+                } else {
+                    sender.sendMessage(ChatColor.RED + script.getName() + " could not be loaded? Please take a look at the log");
+                }
+            });
         } else {
             sender.sendMessage(ChatColor.RED + "Action " + action + " is not implemented yet!");
         }
@@ -245,7 +259,9 @@ public class TimedScriptCommand implements CommandExecutor, TabCompleter {
         EDIT("[add <time> <cmd>|set <time> <#> <cmd>|remove <time> [<#>]]"),
         RUN("[<var=value> ...]"),
         SAVE,
-        DELETE;
+        DELETE,
+        STOP,
+        RELOAD;
 
         private final String usage;
 
