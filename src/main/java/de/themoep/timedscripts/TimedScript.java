@@ -59,33 +59,33 @@ public class TimedScript {
         double currentTime = 0;
 
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line = null;
+        String line;
         int lineNumber = 0;
-        while((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             lineNumber++;
-            if(line.startsWith("#")) {
+            if (line.startsWith("#")) {
                 Matcher authorMatcher = authorPattern.matcher(line);
-                if(authorMatcher.find()) {
+                if (authorMatcher.find()) {
                     creatorName = authorMatcher.group(1);
                 }
                 Matcher uuidMatcher = uuidPattern.matcher(line);
-                if(uuidMatcher.find()) {
+                if (uuidMatcher.find()) {
                     try {
                         creatorId = UUID.fromString(uuidMatcher.group(1));
-                    } catch(IllegalArgumentException ignored) {
+                    } catch (IllegalArgumentException ignored) {
                         plugin.getLogger().warning(uuidMatcher.group(1) + " doesn't appear to be a valid uuid! Could not set creator id correctly!");
                     }
                 }
-            } else if(line.startsWith("-")){
+            } else if (line.startsWith("-")) {
                 addCommand(currentTime, line.substring(1), false);
-            } else if(line.contains(":")){
+            } else if (line.contains(":")) {
                 String timeStr = line.substring(0, line.indexOf(':'));
                 try {
                     currentTime = Double.parseDouble(timeStr);
-                    if(line.length() > timeStr.length() + 1) {
+                    if (line.length() > timeStr.length() + 1) {
                         addCommand(currentTime, line.substring(timeStr.length() + 1), false);
                     }
-                } catch(NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     plugin.getLogger().severe("Expected double on line " + lineNumber + ", found " + timeStr + "!");
                     plugin.getLogger().severe("Trying to parse the rest of the script anyways...");
                 }
@@ -99,7 +99,7 @@ public class TimedScript {
         this.file = new File(scriptFolder, name + ".txt");
         this.name = name;
         this.creatorName = creator.getName();
-        if(creator instanceof Player) {
+        if (creator instanceof Player) {
             creatorId = ((Player) creator).getUniqueId();
         }
         save();
@@ -107,7 +107,7 @@ public class TimedScript {
 
     /**
      * Add a command at a specific time
-     * @param time The time (in seconds)
+     * @param time    The time (in seconds)
      * @param command The string of the command to add
      */
     public boolean addCommand(double time, String command) {
@@ -116,8 +116,8 @@ public class TimedScript {
 
     /**
      * Add a command at a specific time
-     * @param time The time (in seconds)
-     * @param command The string of the command to add
+     * @param time      The time (in seconds)
+     * @param command   The string of the command to add
      * @param writeFile Whether or not the scripts should be written to file
      */
     public boolean addCommand(double time, String command, boolean writeFile) {
@@ -126,7 +126,7 @@ public class TimedScript {
 
     /**
      * Add a command at a specific time
-     * @param time The time (in seconds)
+     * @param time    The time (in seconds)
      * @param command The TimedCommand to add
      */
     public boolean addCommand(double time, TimedCommand command) {
@@ -135,16 +135,16 @@ public class TimedScript {
 
     /**
      * Add a command at a specific time
-     * @param time The time (in seconds)
-     * @param command The TimedCommand to add
+     * @param time      The time (in seconds)
+     * @param command   The TimedCommand to add
      * @param writeFile Whether or not the scripts should be written to file
      */
     public boolean addCommand(double time, TimedCommand command, boolean writeFile) {
-        if(!commands.containsKey(time) || commands.get(time) == null) {
-            commands.put(time, new ArrayList<TimedCommand>());
+        if (!commands.containsKey(time) || commands.get(time) == null) {
+            commands.put(time, new ArrayList<>());
         }
         commands.get(time).add(command);
-        if(writeFile) {
+        if (writeFile) {
             return save();
         }
         return true;
@@ -155,7 +155,7 @@ public class TimedScript {
     }
 
     public TimedCommand setCommand(double time, int index, TimedCommand command) {
-        if(getCommands(time) == null || getCommands(time).size() <= index) {
+        if (getCommands(time) == null || getCommands(time).size() <= index) {
             return null;
         }
         TimedCommand r = getCommands(time).set(index, command);
@@ -165,12 +165,12 @@ public class TimedScript {
 
     /**
      * Remove a command from a specific time entry
-     * @param time The entry's time
+     * @param time  The entry's time
      * @param index The index of the command
      * @return The old TimedCommand object; <tt>null</tt> if there is none with this index or that time
      */
     public TimedCommand removeCommand(double time, int index) {
-        if(index < 0 || commands.get(time) == null || getCommands(time).size() >= index) {
+        if (index < 0 || commands.get(time) == null || getCommands(time).size() >= index) {
             return null;
         }
         TimedCommand r = getCommands(time).remove(index);
@@ -180,22 +180,16 @@ public class TimedScript {
 
     /**
      * Remove all commands equal to a specific (case insensitive) command string from a specific time
-     * @param time The time
+     * @param time          The time
      * @param commandString The command as a string
      * @return The amount of commands removed; -1 if there where not entry at the specified time
      */
     public int removeCommand(double time, String commandString) {
-        if(commands.get(time) == null) {
+        if (commands.get(time) == null) {
             return -1;
         }
         int startSize = getCommands(time).size();
-        Iterator<TimedCommand> cmdIt = getCommands(time).iterator();
-        while(cmdIt.hasNext()) {
-            TimedCommand command = cmdIt.next();
-            if(command.getCommand().equalsIgnoreCase(commandString)) {
-                cmdIt.remove();
-            }
-        }
+        getCommands(time).removeIf(command -> command.getCommand().equalsIgnoreCase(commandString));
         save();
         return startSize - getCommands(time).size();
     }
@@ -214,7 +208,7 @@ public class TimedScript {
      * @return
      */
     public Map<Double, List<TimedCommand>> getCommands() {
-        return new HashMap<Double, List<TimedCommand>>(commands);
+        return new HashMap<>(commands);
     }
 
     public String getName() {
@@ -235,21 +229,21 @@ public class TimedScript {
         headText.add("Author: " + getCreatorName() + " (" + getCreatorId() + ")");
 
         int headWidth = 0;
-        for(String headLine : headText) {
-            if(headLine.length() > headWidth) {
+        for (String headLine : headText) {
+            if (headLine.length() > headWidth) {
                 headWidth = headLine.length();
             }
         }
 
         String divider = "-";
-        for(int i = 1; i <= headWidth; i++) {
+        for (int i = 1; i <= headWidth; i++) {
             divider += "-";
         }
 
         List<String> head = new ArrayList<String>();
         head.add("# " + divider + " #");
-        for(String headLine : headText) {
-            for(int i = headLine.length(); i <= headWidth; i++) {
+        for (String headLine : headText) {
+            for (int i = headLine.length(); i <= headWidth; i++) {
                 headLine += " ";
             }
             head.add("# " + headLine + " #");
@@ -275,22 +269,22 @@ public class TimedScript {
 
             writer = new BufferedWriter(new FileWriter(file));
 
-            for(String headLine : getFileHead()) {
+            for (String headLine : getFileHead()) {
                 writer.write(headLine);
                 writer.newLine();
             }
 
-            for(Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
-                if(entry.getValue() == null || entry.getValue().size() == 0) {
+            for (Map.Entry<Double, List<TimedCommand>> entry : commands.entrySet()) {
+                if (entry.getValue() == null || entry.getValue().size() == 0) {
                     continue;
                 }
                 writer.write(Utils.formatTime(entry.getKey()) + ":");
-                if(entry.getValue().size() == 1) {
+                if (entry.getValue().size() == 1) {
                     writer.write(" " + entry.getValue().get(0));
                     writer.newLine();
                 } else {
                     writer.newLine();
-                    for(TimedCommand command : entry.getValue()) {
+                    for (TimedCommand command : entry.getValue()) {
                         writer.write("- " + command);
                         writer.newLine();
                     }
@@ -303,7 +297,8 @@ public class TimedScript {
         } finally {
             try {
                 writer.close();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return true;
     }
@@ -315,10 +310,10 @@ public class TimedScript {
     public boolean delete() {
         String path = "-" + file.getPath();
         int i = 0;
-        while(file.renameTo(new File(path))) {
+        while (file.renameTo(new File(path))) {
             path = "-" + path;
             i++;
-            if(i > 10) {
+            if (i > 10) {
                 return false;
             }
         }

@@ -21,7 +21,7 @@ import java.util.Map;
 public class Utils {
 
     public static String formatTime(double time) {
-        if(time == (long) time) {
+        if (time == (long) time) {
             return String.format("%d", (long) time);
         }
         return String.format("%s", time);

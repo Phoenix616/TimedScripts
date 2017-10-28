@@ -29,14 +29,14 @@ public class TimedCommand {
 
     public TimedCommand(String command) {
         command = command.trim();
-        if(command.startsWith("/")) {
+        if (command.startsWith("/")) {
             command = command.substring(1);
         }
         Pattern pattern = Pattern.compile("\\%(\\w+?)(=(.*?)|)\\%");
         Matcher matcher = pattern.matcher(command);
-        while(matcher.find()) {
+        while (matcher.find()) {
             Variable var = new Variable(matcher.group(1));
-            if(matcher.groupCount() >= 3) {
+            if (matcher.groupCount() >= 3) {
                 var.setDefault(matcher.group(3));
             }
             variables.put(var.getName(), var);
@@ -63,8 +63,8 @@ public class TimedCommand {
      */
     public String getCommand(Map<String, String> replacements) throws MissingVariableException {
         String returnCommand = command;
-        if(replacements != null) {
-            for(Variable var : variables.values()) {
+        if (replacements != null) {
+            for (Variable var : variables.values()) {
                 String value = replacements.get(var.getName());
                 if (value == null) {
                     value = var.getDefault();
@@ -101,8 +101,8 @@ public class TimedCommand {
      * @return <tt>true</tt> if all variables have replacements; <tt>false</tt> if not
      */
     private boolean checkVariables(Set<String> replacements) {
-        for(Variable var : variables.values()) {
-            if(!inSet(var.getName(), replacements) && !var.hasDefault()) {
+        for (Variable var : variables.values()) {
+            if (!inSet(var.getName(), replacements) && !var.hasDefault()) {
                 return false;
             }
         }
@@ -121,14 +121,14 @@ public class TimedCommand {
     /**
      * Check whether or not a string is in a set case insensitive
      * @param string The string to check
-     * @param set The set to search through
+     * @param set    The set to search through
      * @return Whether or not a string is in the set (case insensitive)
      */
     private boolean inSet(String string, Set<String> set) {
-        if(set.contains(string))
+        if (set.contains(string))
             return true;
-        for(String s : set) {
-            if(s.equalsIgnoreCase(string)) {
+        for (String s : set) {
+            if (s.equalsIgnoreCase(string)) {
                 return true;
             }
         }
@@ -140,7 +140,7 @@ public class TimedCommand {
      * @return A set of variables
      */
     public Set<Variable> getVariables() {
-        return new HashSet<Variable>(variables.values());
+        return new HashSet<>(variables.values());
     }
 
     @Override

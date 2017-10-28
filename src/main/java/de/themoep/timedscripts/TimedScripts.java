@@ -69,7 +69,7 @@ public class TimedScripts extends JavaPlugin {
                                     if (scriptManager.stopScript(script)) {
                                         sender.sendMessage(ChatColor.YELLOW + "Script " + script.getName() + " stopped!");
                                     } else {
-                                        sender.sendMessage(ChatColor.YELLOW + "Script "+ script.getName() + " was not running!");
+                                        sender.sendMessage(ChatColor.YELLOW + "Script " + script.getName() + " was not running!");
                                     }
                                 } else {
                                     sender.sendMessage(ChatColor.RED + "No script with the name " + scriptName + " found!");
