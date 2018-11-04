@@ -256,16 +256,20 @@ public class TimedScript {
         BufferedWriter writer = null;
         try {
             file.createNewFile();
-            Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
-            //add owners permission
-            perms.add(PosixFilePermission.OWNER_READ);
-            perms.add(PosixFilePermission.OWNER_WRITE);
-            //add group permissions
-            perms.add(PosixFilePermission.GROUP_READ);
-            perms.add(PosixFilePermission.GROUP_WRITE);
-            //add others permissions
-            perms.add(PosixFilePermission.OTHERS_READ);
-            Files.setPosixFilePermissions(Paths.get(file.getPath()), perms);
+            try {
+                Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+                //add owners permission
+                perms.add(PosixFilePermission.OWNER_READ);
+                perms.add(PosixFilePermission.OWNER_WRITE);
+                //add group permissions
+                perms.add(PosixFilePermission.GROUP_READ);
+                perms.add(PosixFilePermission.GROUP_WRITE);
+                //add others permissions
+                perms.add(PosixFilePermission.OTHERS_READ);
+                Files.setPosixFilePermissions(Paths.get(file.getPath()), perms);
+            } catch (UnsupportedOperationException e) {
+                // Not able to set file permission, lets hope the system does it correctly...
+            }
 
             writer = new BufferedWriter(new FileWriter(file));
 
